@@ -315,7 +315,11 @@ export function ProductPage() {
               <h2 className="font-heading text-3xl font-medium text-foreground mb-6">
                 Customize Your Bed
               </h2>
-              <BedCustomizer onCustomizationChange={handleCustomizationChange} />
+              <BedCustomizer 
+                onCustomizationChange={handleCustomizationChange}
+                basePrice={product.price}
+                onBuyNow={addToCart}
+              />
             </div>
 
             <Separator />

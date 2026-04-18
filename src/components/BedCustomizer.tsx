@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Check } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { Check, ShoppingCart } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
 export interface BedCustomization {
@@ -18,6 +19,8 @@ export interface BedCustomization {
 
 interface BedCustomizerProps {
   onCustomizationChange?: (customization: BedCustomization) => void
+  basePrice?: number
+  onBuyNow?: () => void
   className?: string
 }
 
@@ -113,7 +116,7 @@ const baseOptions = [
   },
 ]
 
-export function BedCustomizer({ onCustomizationChange, className }: BedCustomizerProps) {
+export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, className }: BedCustomizerProps) {
   const [customization, setCustomization] = useState<BedCustomization>({
     size: 'King',
     fabric: 'Plush Velvet',
@@ -447,25 +450,57 @@ export function BedCustomizer({ onCustomizationChange, className }: BedCustomize
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.4 }}
-        className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-2 border-accent rounded-lg p-3 shadow-xl"
+        className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-2 border-accent rounded-lg p-4 shadow-xl"
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-1.5">
-          <h4 className="font-heading text-base md:text-lg font-medium">Customization Extras</h4>
-          <div className="text-left sm:text-right">
-            <p className="text-xs text-muted-foreground mb-0.5">Additional cost</p>
-            <p className="font-heading text-xl md:text-2xl font-medium text-primary">
-              +£{calculatePrice()}
-            </p>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Base Price</p>
+              <p className="font-heading text-lg font-medium text-foreground">
+                £{basePrice.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground mb-0.5">Customization</p>
+              <p className="font-heading text-lg font-medium text-primary">
+                +£{calculatePrice()}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground mb-0.5">Total Price</p>
+              <p className="font-heading text-2xl md:text-3xl font-semibold text-accent">
+                £{(basePrice + calculatePrice()).toLocaleString()}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          <Badge variant="secondary" className="text-xs">{customization.size}</Badge>
-          <Badge variant="secondary" className="text-xs">{customization.fabric}</Badge>
-          <Badge variant="secondary" className="text-xs">{customization.color}</Badge>
-          {customization.ottomanStorage && <Badge variant="secondary" className="text-xs">Ottoman Storage</Badge>}
-          {customization.gasLift && <Badge variant="secondary" className="text-xs">Gas Lift</Badge>}
-          {customization.metalBase && <Badge variant="secondary" className="text-xs">Metal Base</Badge>}
-          <Badge variant="secondary" className="text-xs">{customization.baseType} Base</Badge>
+          
+          <Separator className="bg-border/50" />
+          
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            <Badge variant="secondary" className="text-xs">{customization.size}</Badge>
+            <Badge variant="secondary" className="text-xs">{customization.fabric}</Badge>
+            <Badge variant="secondary" className="text-xs">{customization.color}</Badge>
+            {customization.ottomanStorage && <Badge variant="secondary" className="text-xs">Ottoman Storage</Badge>}
+            {customization.gasLift && <Badge variant="secondary" className="text-xs">Gas Lift</Badge>}
+            {customization.metalBase && <Badge variant="secondary" className="text-xs">Metal Base</Badge>}
+            <Badge variant="secondary" className="text-xs">{customization.baseType} Base</Badge>
+          </div>
+
+          {onBuyNow && (
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button
+                onClick={onBuyNow}
+                className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 font-semibold text-base h-12"
+                size="lg"
+              >
+                <ShoppingCart size={20} weight="bold" className="mr-2" />
+                Buy Now - £{(basePrice + calculatePrice()).toLocaleString()}
+              </Button>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </div>
