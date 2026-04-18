@@ -11,7 +11,7 @@ import { ReviewsSection } from '@/components/ReviewsSection'
 import { products } from '@/lib/products'
 import { getProductReviews } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
-import { Ruler, Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock } from '@phosphor-icons/react'
+import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
@@ -283,35 +283,6 @@ export function ProductPage() {
                 {product.description}
               </p>
             </div>
-
-            {product.dimensions.width > 0 && (
-              <>
-                <Separator />
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Ruler size={24} className="text-muted-foreground" />
-                    <h3 className="font-semibold text-lg">Base Dimensions</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    King size shown - customize your preferred size below
-                  </p>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-muted/30 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-1">Width</p>
-                      <p className="text-xl font-semibold">{product.dimensions.width}cm</p>
-                    </div>
-                    <div className="bg-muted/30 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-1">Length</p>
-                      <p className="text-xl font-semibold">{product.dimensions.length}cm</p>
-                    </div>
-                    <div className="bg-muted/30 rounded-lg p-4">
-                      <p className="text-sm text-muted-foreground mb-1">Height</p>
-                      <p className="text-xl font-semibold">{product.dimensions.height}cm</p>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
 
             <Separator />
 
