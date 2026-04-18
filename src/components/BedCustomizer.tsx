@@ -280,7 +280,7 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               <h4 className="font-heading text-lg md:text-xl font-medium text-foreground mb-3 md:mb-4">
                 Available Colors
               </h4>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+              <div className="grid grid-cols-4 gap-3">
                 {selectedFabricOption.colors.map((color) => (
                   <motion.div
                     key={color.name}
