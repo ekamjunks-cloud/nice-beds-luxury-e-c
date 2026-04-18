@@ -6,22 +6,26 @@ import { Separator } from '@/components/ui/separator'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from '@/components/ui/carousel'
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
+import { WishlistDrawer } from '@/components/WishlistDrawer'
 import { BedCustomizer, BedCustomization } from '@/components/BedCustomizer'
 import { ReviewsSection } from '@/components/ReviewsSection'
 import { products } from '@/lib/products'
 import { getProductReviews, calculateAverageRating } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
-import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star } from '@phosphor-icons/react'
+import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star, Heart } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
+import { useWishlist } from '@/hooks/use-wishlist'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
 
 export function ProductPage() {
   const [cartOpen, setCartOpen] = useState(false)
+  const [wishlistOpen, setWishlistOpen] = useState(false)
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const [, setCart] = useKV<CartItem[]>('cart', [])
+  const { isInWishlist, toggleWishlist } = useWishlist()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
   const [customization, setCustomization] = useState<BedCustomization | null>(null)
@@ -140,6 +144,7 @@ export function ProductPage() {
     <>
       <Navigation
         onCartOpen={() => setCartOpen(true)}
+        onWishlistOpen={() => setWishlistOpen(true)}
         onNavigate={handleNavigate}
         currentSection="shop"
       />
@@ -318,14 +323,28 @@ export function ProductPage() {
             <div className="space-y-4 sticky top-4 bg-background pt-4 pb-4">
               {product.inStock ? (
                 <>
-                  <Button
-                    onClick={addToCart}
-                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
-                    size="lg"
-                  >
-                    <ShoppingCart size={20} className="mr-2" weight="bold" />
-                    Add to Cart
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={addToCart}
+                      className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
+                      size="lg"
+                    >
+                      <ShoppingCart size={20} className="mr-2" weight="bold" />
+                      Add to Cart
+                    </Button>
+                    <Button
+                      onClick={() => toggleWishlist(product)}
+                      variant={isInWishlist(product.id) ? "default" : "outline"}
+                      size="lg"
+                      className={isInWishlist(product.id) ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-accent/30 hover:bg-accent/10"}
+                    >
+                      <Heart 
+                        size={24} 
+                        weight={isInWishlist(product.id) ? "fill" : "regular"}
+                        className={isInWishlist(product.id) ? "text-accent-foreground" : "text-accent"}
+                      />
+                    </Button>
+                  </div>
                   <div className="flex flex-col items-center gap-3 py-2">
                     <div className="flex items-center justify-center gap-2">
                       <span className="text-xs text-muted-foreground">Secure payment with</span>
@@ -498,6 +517,7 @@ export function ProductPage() {
       </div>
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <WishlistDrawer open={wishlistOpen} onOpenChange={setWishlistOpen} />
       <Toaster />
     </>
   )

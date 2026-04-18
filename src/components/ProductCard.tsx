@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Product } from '@/lib/types'
 import { motion } from 'framer-motion'
-import { Sparkle } from '@phosphor-icons/react'
+import { Sparkle, Heart } from '@phosphor-icons/react'
+import { useWishlist } from '@/hooks/use-wishlist'
 
 interface ProductCardProps {
   product: Product
@@ -11,6 +12,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onViewDetails }: ProductCardProps) {
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const inWishlist = isInWishlist(product.id)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,6 +37,21 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
               Bespoke
             </Badge>
           )}
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleWishlist(product)
+            }}
+            className="absolute top-3 left-3 h-10 w-10 rounded-full bg-card/80 backdrop-blur hover:bg-card transition-all"
+          >
+            <Heart 
+              size={20} 
+              weight={inWishlist ? "fill" : "regular"} 
+              className={inWishlist ? "text-accent" : "text-foreground"}
+            />
+          </Button>
         </div>
         <CardContent className="p-6">
           <h3 className="font-heading text-2xl font-medium text-foreground mb-2">

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { Toaster } from '@/components/ui/sonner'
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
+import { WishlistDrawer } from '@/components/WishlistDrawer'
 import { ProductCard } from '@/components/ProductCard'
 import { ProductPage } from '@/components/ProductPage'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,7 @@ function HomePage() {
   const navigate = useNavigate()
   const [currentSection, setCurrentSection] = useState('home')
   const [cartOpen, setCartOpen] = useState(false)
+  const [wishlistOpen, setWishlistOpen] = useState(false)
 
   const handleViewDetails = (product: Product) => {
     navigate(`/product/${product.slug}`)
@@ -33,6 +35,7 @@ function HomePage() {
     <div className="min-h-screen bg-background">
       <Navigation
         onCartOpen={() => setCartOpen(true)}
+        onWishlistOpen={() => setWishlistOpen(true)}
         onNavigate={scrollToSection}
         currentSection={currentSection}
       />
@@ -343,6 +346,7 @@ function HomePage() {
       </footer>
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <WishlistDrawer open={wishlistOpen} onOpenChange={setWishlistOpen} />
       <Toaster />
     </div>
   )

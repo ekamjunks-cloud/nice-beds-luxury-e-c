@@ -2,18 +2,21 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingBag, List } from '@phosphor-icons/react'
+import { ShoppingBag, List, Heart } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
+import { useWishlist } from '@/hooks/use-wishlist'
 import { CartItem } from '@/lib/types'
 
 interface NavigationProps {
   onCartOpen: () => void
+  onWishlistOpen: () => void
   onNavigate: (section: string) => void
   currentSection: string
 }
 
-export function Navigation({ onCartOpen, onNavigate, currentSection }: NavigationProps) {
+export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSection }: NavigationProps) {
   const [cart] = useKV<CartItem[]>('cart', [])
+  const { wishlistCount } = useWishlist()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const cartItemCount = (cart || []).reduce((sum, item) => sum + item.quantity, 0)
@@ -51,6 +54,22 @@ export function Navigation({ onCartOpen, onNavigate, currentSection }: Navigatio
           </div>
 
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onWishlistOpen}
+              className="relative"
+            >
+              <Heart size={20} weight="regular" />
+              {wishlistCount > 0 && (
+                <Badge 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground text-xs"
+                >
+                  {wishlistCount}
+                </Badge>
+              )}
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
