@@ -9,9 +9,9 @@ import { CartDrawer } from '@/components/CartDrawer'
 import { BedCustomizer, BedCustomization } from '@/components/BedCustomizer'
 import { ReviewsSection } from '@/components/ReviewsSection'
 import { products } from '@/lib/products'
-import { getProductReviews } from '@/lib/reviews'
+import { getProductReviews, calculateAverageRating } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
-import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package } from '@phosphor-icons/react'
+import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
@@ -253,6 +253,24 @@ export function ProductPage() {
             className="space-y-8"
           >
             <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={20}
+                      weight={star <= Math.round(calculateAverageRating(reviews)) ? 'fill' : 'regular'}
+                      className={star <= Math.round(calculateAverageRating(reviews)) ? 'text-accent' : 'text-border'}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-foreground">
+                  {calculateAverageRating(reviews).toFixed(1)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                </span>
+              </div>
               <h1 className="font-heading text-5xl font-medium text-foreground mb-4">
                 {product.name}
               </h1>
