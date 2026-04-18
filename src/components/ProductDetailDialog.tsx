@@ -2,11 +2,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from '@/components/ui/carousel'
 import { Product } from '@/lib/types'
 import { Ruler, Sparkle } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { CartItem } from '@/lib/types'
 import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
 
 interface ProductDetailDialogProps {
   product: Product | null
@@ -16,6 +18,16 @@ interface ProductDetailDialogProps {
 
 export function ProductDetailDialog({ product, open, onOpenChange }: ProductDetailDialogProps) {
   const [, setCart] = useKV<CartItem[]>('cart', [])
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+
+  useEffect(() => {
+    if (!carouselApi) return
+
+    carouselApi.on('select', () => {
+      setSelectedImageIndex(carouselApi.selectedScrollSnap())
+    })
+  }, [carouselApi])
 
   if (!product) return null
 
@@ -47,18 +59,59 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-8 mt-6">
-          <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-            {product.category === 'bespoke' && (
-              <Badge className="absolute top-3 right-3 bg-accent text-accent-foreground gap-1">
-                <Sparkle size={14} weight="fill" />
-                Bespoke
-              </Badge>
-            )}
+          <div className="space-y-4">
+            <div className="relative rounded-lg overflow-hidden">
+              <Carousel
+                opts={{ loop: true }}
+                className="w-full"
+                setApi={setCarouselApi}
+              >
+                <CarouselContent>
+                  {product.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+                        <img
+                          src={image}
+                          alt={`${product.name} - View ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
+              </Carousel>
+              {product.category === 'bespoke' && (
+                <Badge className="absolute top-3 right-3 bg-accent text-accent-foreground gap-1">
+                  <Sparkle size={14} weight="fill" />
+                  Bespoke
+                </Badge>
+              )}
+            </div>
+
+            <div className="grid grid-cols-4 gap-2">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedImageIndex(index)
+                    carouselApi?.scrollTo(index)
+                  }}
+                  className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all ${
+                    selectedImageIndex === index
+                      ? 'border-accent ring-2 ring-accent/20'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`${product.name} thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-6">
