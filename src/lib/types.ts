@@ -44,3 +44,15 @@ export interface ConsultationRequest {
   productInterest?: string
   timestamp: number
 }
+
+export interface Review {
+  id: string
+  author: string
+  rating: number
+  title: string
+  content: string
+  date: string
+  verified: boolean
+  size?: string
+  color?: string
+}

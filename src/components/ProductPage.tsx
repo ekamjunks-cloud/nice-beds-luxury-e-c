@@ -7,7 +7,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
 import { BedCustomizer, BedCustomization } from '@/components/BedCustomizer'
+import { ReviewsSection } from '@/components/ReviewsSection'
 import { products } from '@/lib/products'
+import { getProductReviews } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
 import { Ruler, Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
@@ -123,6 +125,8 @@ export function ProductPage() {
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
     .slice(0, 3)
+
+  const reviews = getProductReviews(product.id)
 
   const handleNavigate = (section: string) => {
     navigate('/')
@@ -439,6 +443,8 @@ export function ProductPage() {
             </div>
           </motion.div>
         )}
+
+        <ReviewsSection reviews={reviews} productName={product.name} />
         </div>
       </div>
 
