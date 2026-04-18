@@ -315,8 +315,6 @@ export function ProductPage() {
               />
             </div>
 
-            <Separator />
-
             <div className="space-y-4 sticky top-4 bg-background pt-4 pb-4">
               {product.inStock ? (
                 <>
@@ -397,6 +395,8 @@ export function ProductPage() {
                 Free delivery across the UK • 10-year warranty included
               </p>
             </div>
+
+            <Separator />
 
             <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg p-6 border border-accent/20">
               <div className="flex items-center gap-3 mb-5">
