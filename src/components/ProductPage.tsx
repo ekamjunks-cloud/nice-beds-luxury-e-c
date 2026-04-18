@@ -330,7 +330,7 @@ export function ProductPage() {
               />
             </div>
 
-            <div className="space-y-4 sticky top-4 bg-background pt-4 pb-4 z-10">
+            <div className="space-y-4 sticky top-24 bg-background pt-4 pb-4 z-10">
               {product.inStock ? (
                 <>
                   <div className="flex gap-3">
