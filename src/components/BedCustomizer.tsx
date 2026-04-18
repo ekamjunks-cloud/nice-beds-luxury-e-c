@@ -208,16 +208,18 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     Popular
                   </Badge>
                 )}
-                {customization.size === size.name && (
-                  <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
-                    <Check size={14} weight="bold" className="text-accent-foreground" />
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h4 className="font-heading text-base md:text-lg font-medium flex-1">{size.name}</h4>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <p className="font-semibold text-sm text-primary whitespace-nowrap">
+                      {size.price === 0 ? 'Base' : `+£${size.price}`}
+                    </p>
+                    {customization.size === size.name && (
+                      <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                        <Check size={14} weight="bold" className="text-accent-foreground" />
+                      </div>
+                    )}
                   </div>
-                )}
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <h4 className="font-heading text-base md:text-lg font-medium pr-6">{size.name}</h4>
-                  <p className="font-semibold text-sm text-primary whitespace-nowrap">
-                    {size.price === 0 ? 'Base' : `+£${size.price}`}
-                  </p>
                 </div>
                 <p className="text-xs text-muted-foreground">{size.dimensions}</p>
               </Card>
@@ -267,16 +269,18 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                       Popular
                     </Badge>
                   )}
-                  {customization.fabric === fabricOption.fabric && (
-                    <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
-                      <Check size={14} weight="bold" className="text-accent-foreground" />
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h4 className="font-heading text-base md:text-lg font-medium flex-1">{fabricOption.fabric}</h4>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <p className="font-semibold text-sm text-primary whitespace-nowrap">
+                        {fabricOption.price === 0 ? 'Base' : `+£${fabricOption.price}`}
+                      </p>
+                      {customization.fabric === fabricOption.fabric && (
+                        <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                          <Check size={14} weight="bold" className="text-accent-foreground" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <h4 className="font-heading text-base md:text-lg font-medium pr-6">{fabricOption.fabric}</h4>
-                    <p className="font-semibold text-sm text-primary whitespace-nowrap">
-                      {fabricOption.price === 0 ? 'Base' : `+£${fabricOption.price}`}
-                    </p>
                   </div>
                   <p className="text-xs text-muted-foreground italic">{fabricOption.texture}</p>
                 </Card>
@@ -477,16 +481,18 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     Popular
                   </Badge>
                 )}
-                {customization.baseType === base.name && (
-                  <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
-                    <Check size={14} weight="bold" className="text-accent-foreground" />
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h4 className="font-heading text-base md:text-lg font-medium flex-1">{base.name}</h4>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <p className="font-semibold text-sm text-primary whitespace-nowrap">
+                      {base.price === 0 ? 'Base' : `+£${base.price}`}
+                    </p>
+                    {customization.baseType === base.name && (
+                      <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                        <Check size={14} weight="bold" className="text-accent-foreground" />
+                      </div>
+                    )}
                   </div>
-                )}
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <h4 className="font-heading text-base md:text-lg font-medium pr-6">{base.name}</h4>
-                  <p className="font-semibold text-sm text-primary whitespace-nowrap">
-                    {base.price === 0 ? 'Base' : `+£${base.price}`}
-                  </p>
                 </div>
                 <p className="text-xs text-muted-foreground leading-snug">{base.description}</p>
               </Card>
