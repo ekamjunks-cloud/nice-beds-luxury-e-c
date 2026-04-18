@@ -23,6 +23,7 @@ export function ProductPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
   const [customization, setCustomization] = useState<BedCustomization | null>(null)
+  const [selectedColor, setSelectedColor] = useState<string>('')
 
   const product = products.find(p => p.slug === slug)
 
