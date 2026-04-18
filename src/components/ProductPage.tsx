@@ -317,64 +317,6 @@ export function ProductPage() {
 
             <Separator />
 
-            <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg p-6 border border-accent/20">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Truck size={24} weight="bold" className="text-accent" />
-                </div>
-                <div>
-                  <h3 className="font-heading text-2xl font-medium text-foreground">Delivery Estimate</h3>
-                  <p className="text-sm text-muted-foreground">Free UK-wide delivery included</p>
-                </div>
-              </div>
-
-              <div className="grid gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Package size={20} weight="duotone" className="text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Production Time</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
-                      {product.category === 'bespoke' 
-                        ? '8-12 weeks - Each piece is handcrafted to order by our skilled artisans in Leeds'
-                        : '6-8 weeks - Carefully crafted with attention to every detail'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MapPin size={20} weight="duotone" className="text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Delivery Coverage</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
-                      Free delivery to anywhere in the UK. Professional two-person delivery team included for safe installation.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CalendarCheck size={20} weight="duotone" className="text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Estimated Arrival</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
-                      Your bed will arrive approximately {product.category === 'bespoke' ? '10-14 weeks' : '8-10 weeks'} from order confirmation. We'll keep you updated at every stage.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-5 pt-5 border-t border-accent/20">
-                <p className="text-xs text-foreground/70 leading-relaxed">
-                  <strong>Note:</strong> Delivery times may vary during peak seasons. We'll provide a more precise delivery window once your order enters production. International shipping available upon request.
-                </p>
-              </div>
-            </div>
-
             <div className="space-y-4 sticky top-4 bg-background pt-4 pb-4">
               {product.inStock ? (
                 <>
@@ -454,6 +396,64 @@ export function ProductPage() {
               <p className="text-xs text-muted-foreground text-center">
                 Free delivery across the UK • 10-year warranty included
               </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg p-6 border border-accent/20">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Truck size={24} weight="bold" className="text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-2xl font-medium text-foreground">Delivery Estimate</h3>
+                  <p className="text-sm text-muted-foreground">Free UK-wide delivery included</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Package size={20} weight="duotone" className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground mb-1">Production Time</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      {product.category === 'bespoke' 
+                        ? '8-12 weeks - Each piece is handcrafted to order by our skilled artisans in Leeds'
+                        : '6-8 weeks - Carefully crafted with attention to every detail'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPin size={20} weight="duotone" className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground mb-1">Delivery Coverage</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      Free delivery to anywhere in the UK. Professional two-person delivery team included for safe installation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CalendarCheck size={20} weight="duotone" className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground mb-1">Estimated Arrival</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      Your bed will arrive approximately {product.category === 'bespoke' ? '10-14 weeks' : '8-10 weeks'} from order confirmation. We'll keep you updated at every stage.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 pt-5 border-t border-accent/20">
+                <p className="text-xs text-foreground/70 leading-relaxed">
+                  <strong>Note:</strong> Delivery times may vary during peak seasons. We'll provide a more precise delivery window once your order enters production. International shipping available upon request.
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>
