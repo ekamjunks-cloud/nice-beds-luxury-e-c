@@ -17,10 +17,22 @@ export interface Product {
   inStock: boolean
 }
 
+export interface BedCustomization {
+  size: 'Double' | 'King' | 'Super King'
+  fabric: 'Naples' | 'Plush Velvet'
+  color: string
+  ottomanStorage: boolean
+  gasLift: boolean
+  metalBase: boolean
+  baseType: 'Slats' | 'Board'
+}
+
 export interface CartItem {
   product: Product
   quantity: number
   selectedColor?: string
+  customization?: BedCustomization
+  customizationPrice?: number
 }
 
 export interface ConsultationRequest {

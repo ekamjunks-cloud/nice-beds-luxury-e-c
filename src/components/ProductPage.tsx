@@ -52,21 +52,71 @@ export function ProductPage() {
     )
   }
 
+  const handleCustomizationChange = (newCustomization: BedCustomization) => {
+    setCustomization(newCustomization)
+  }
+
+  const calculateCustomizationPrice = (custom: BedCustomization): number => {
+    let total = 0
+    
+    const sizeOptions = [
+      { name: 'Double', price: 0 },
+      { name: 'King', price: 200 },
+      { name: 'Super King', price: 400 },
+    ]
+    
+    const fabricOptions = [
+      { name: 'Naples', price: 0 },
+      { name: 'Plush Velvet', price: 150 },
+    ]
+    
+    const baseOptions = [
+      { name: 'Slats', price: 0 },
+      { name: 'Board', price: 50 },
+    ]
+    
+    const size = sizeOptions.find(s => s.name === custom.size)
+    if (size) total += size.price
+    
+    const fabric = fabricOptions.find(f => f.name === custom.fabric)
+    if (fabric) total += fabric.price
+    
+    if (custom.ottomanStorage) total += 250
+    if (custom.metalBase) total += 100
+    
+    const base = baseOptions.find(b => b.name === custom.baseType)
+    if (base) total += base.price
+    
+    return total
+  }
+
   const addToCart = () => {
+    const customizationPrice = customization ? calculateCustomizationPrice(customization) : 0
+    
     setCart((currentCart) => {
-      const existing = (currentCart || []).find(item => item.product.id === product.id)
+      const existing = (currentCart || []).find(item => 
+        item.product.id === product.id && 
+        JSON.stringify(item.customization) === JSON.stringify(customization)
+      )
       
       if (existing) {
         toast.success('Quantity updated in cart')
         return (currentCart || []).map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1, selectedColor }
+          item.product.id === product.id && 
+          JSON.stringify(item.customization) === JSON.stringify(customization)
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         )
       }
       
       toast.success('Added to cart')
-      return [...(currentCart || []), { product, quantity: 1, selectedColor }]
+      return [...(currentCart || []), { 
+        product, 
+        quantity: 1, 
+        selectedColor,
+        customization: customization || undefined,
+        customizationPrice
+      }]
     })
   }
 
@@ -202,10 +252,24 @@ export function ProductPage() {
               <h1 className="font-heading text-5xl font-medium text-foreground mb-4">
                 {product.name}
               </h1>
-              <p className="text-4xl font-heading font-medium text-primary">
-                £{product.price.toLocaleString()}
-                {product.category === 'bespoke' && <span className="text-lg text-muted-foreground"> starting</span>}
-              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-4xl font-heading font-medium text-primary">
+                  £{product.price.toLocaleString()}
+                  {product.category === 'bespoke' && <span className="text-lg text-muted-foreground"> starting</span>}
+                </p>
+                {customization && (
+                  <p className="text-xl text-muted-foreground">
+                    + £{calculateCustomizationPrice(customization).toLocaleString()} customization
+                  </p>
+                )}
+              </div>
+              {customization && (
+                <div className="mt-3 p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                  <p className="font-heading text-2xl font-medium text-foreground">
+                    Total: £{(product.price + calculateCustomizationPrice(customization)).toLocaleString()}
+                  </p>
+                </div>
+              )}
             </div>
 
             <Separator />
@@ -222,8 +286,11 @@ export function ProductPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <Ruler size={24} className="text-muted-foreground" />
-                    <h3 className="font-semibold text-lg">Dimensions</h3>
+                    <h3 className="font-semibold text-lg">Base Dimensions</h3>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    King size shown - customize your preferred size below
+                  </p>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="bg-muted/30 rounded-lg p-4">
                       <p className="text-sm text-muted-foreground mb-1">Width</p>
@@ -245,50 +312,10 @@ export function ProductPage() {
             <Separator />
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Available Colors</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {product.colors.map((color, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-3 rounded-md border-2 transition-all text-left ${
-                      selectedColor === color
-                        ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
-                        : 'border-border hover:border-accent/50'
-                    }`}
-                  >
-                    <span className="font-medium">{color}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Materials</h3>
-              <ul className="space-y-2">
-                {product.materials.map((material, idx) => (
-                  <li key={idx} className="text-foreground flex items-start">
-                    <span className="text-accent mr-2 font-bold">•</span>
-                    <span>{material}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Features</h3>
-              <ul className="grid grid-cols-2 gap-3">
-                {product.features.map((feature, idx) => (
-                  <li key={idx} className="text-foreground flex items-start text-sm">
-                    <span className="text-accent mr-2">✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <h2 className="font-heading text-3xl font-medium text-foreground mb-6">
+                Customize Your Bed
+              </h2>
+              <BedCustomizer onCustomizationChange={handleCustomizationChange} />
             </div>
 
             <Separator />

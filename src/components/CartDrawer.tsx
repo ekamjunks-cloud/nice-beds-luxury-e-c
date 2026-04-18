@@ -15,32 +15,39 @@ interface CartDrawerProps {
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const [cart, setCart] = useKV<CartItemType[]>('cart', [])
 
-  const updateQuantity = (productId: string, delta: number) => {
+  const updateQuantity = (productId: string, itemIndex: number, delta: number) => {
     setCart((currentCart) => {
-      const existingItem = (currentCart || []).find(item => item.product.id === productId)
-      if (!existingItem) return currentCart || []
+      const newCart = [...(currentCart || [])]
+      const item = newCart[itemIndex]
+      
+      if (!item) return currentCart || []
 
-      const newQuantity = existingItem.quantity + delta
+      const newQuantity = item.quantity + delta
       
       if (newQuantity <= 0) {
         toast.success('Item removed from cart')
-        return (currentCart || []).filter(item => item.product.id !== productId)
+        newCart.splice(itemIndex, 1)
+        return newCart
       }
 
-      return (currentCart || []).map(item =>
-        item.product.id === productId
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
+      newCart[itemIndex] = { ...item, quantity: newQuantity }
+      return newCart
     })
   }
 
-  const removeItem = (productId: string) => {
-    setCart((currentCart) => (currentCart || []).filter(item => item.product.id !== productId))
+  const removeItem = (productId: string, itemIndex: number) => {
+    setCart((currentCart) => {
+      const newCart = [...(currentCart || [])]
+      newCart.splice(itemIndex, 1)
+      return newCart
+    })
     toast.success('Item removed from cart')
   }
 
-  const total = (cart || []).reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+  const total = (cart || []).reduce((sum, item) => {
+    const itemPrice = item.product.price + (item.customizationPrice || 0)
+    return sum + (itemPrice * item.quantity)
+  }, 0)
   const itemCount = (cart || []).reduce((sum, item) => sum + item.quantity, 0)
 
   return (
@@ -66,8 +73,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           <>
             <ScrollArea className="flex-1 -mx-6 px-6 mt-8 h-[calc(100vh-280px)]">
               <div className="space-y-4">
-                {(cart || []).map((item) => (
-                  <div key={item.product.id} className="flex gap-4 py-4">
+                {(cart || []).map((item, index) => (
+                  <div key={`${item.product.id}-${index}`} className="flex gap-4 py-4">
                     <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                       <img
                         src={item.product.images[0]}
@@ -77,27 +84,44 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-heading text-lg font-medium">
-                          {item.product.name}
-                        </h4>
+                        <div>
+                          <h4 className="font-heading text-lg font-medium">
+                            {item.product.name}
+                          </h4>
+                          {item.customization && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {item.customization.size} • {item.customization.fabric} • {item.customization.color}
+                              {item.customization.ottomanStorage && ' • Ottoman'}
+                              {item.customization.metalBase && ' • Metal Base'}
+                            </p>
+                          )}
+                        </div>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 -mt-1"
-                          onClick={() => removeItem(item.product.id)}
+                          onClick={() => removeItem(item.product.id, index)}
                         >
                           <X size={16} />
                         </Button>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <p className="text-sm text-muted-foreground mb-1">
                         £{item.product.price.toLocaleString()}
+                        {item.customizationPrice && item.customizationPrice > 0 && (
+                          <span> + £{item.customizationPrice.toLocaleString()} custom</span>
+                        )}
                       </p>
+                      {item.customizationPrice && item.customizationPrice > 0 && (
+                        <p className="text-sm font-medium text-primary mb-2">
+                          Total: £{(item.product.price + item.customizationPrice).toLocaleString()}
+                        </p>
+                      )}
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => updateQuantity(item.product.id, -1)}
+                          onClick={() => updateQuantity(item.product.id, index, -1)}
                         >
                           <Minus size={14} />
                         </Button>
@@ -106,7 +130,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => updateQuantity(item.product.id, 1)}
+                          onClick={() => updateQuantity(item.product.id, index, 1)}
                         >
                           <Plus size={14} />
                         </Button>

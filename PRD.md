@@ -19,12 +19,12 @@ This is an ecommerce showcase with cart functionality, product browsing, and inq
 - Progression: View hero section → Browse product grid → Click product card → View detailed product page with specifications
 - Success criteria: All products display with correct images, prices, dimensions, and descriptions
 
-**Product Detail View**
-- Functionality: Dedicated product page with comprehensive information including materials, dimensions, customization options, and interactive image carousel with multiple product views
-- Purpose: Provide all information needed to make a purchase decision in a focused, distraction-free environment
+**Product Detail View with Full Customization**
+- Functionality: Dedicated product page with comprehensive bed customization options including size selection (Double, King, Super King), fabric choice (Naples, Plush Velvet), 10 color options, ottoman storage with gas lift, metal base option, and base type selection (Slats or Board). Interactive image carousel displays multiple product views.
+- Purpose: Provide all information and customization options needed to configure and purchase the perfect bed
 - Trigger: Clicking on a product card or "View Details" button
-- Progression: Click product → Navigate to dedicated product page → View image carousel → Read full specifications → Select color options → Add to cart or request consultation → View similar products
-- Success criteria: Users can view all product details, navigate through image gallery, select options, and clearly understand what they're purchasing
+- Progression: Click product → Navigate to dedicated product page → View image carousel → Read full specifications → Select size → Choose fabric → Pick color → Add storage/base options → Review customization price → Add to cart or request consultation → View similar products
+- Success criteria: Users can fully customize their bed, see pricing updates in real-time, understand all available options, and add customized configuration to cart
 
 **Shopping Cart**
 - Functionality: Persist selected items with quantities and display running total
