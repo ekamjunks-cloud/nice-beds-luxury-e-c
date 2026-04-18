@@ -267,44 +267,43 @@ export function ProductPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-          >
-              <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                <div className="flex items-center">
-                      key={star}
-                      size={18}
-                      weight={star <= Math.round(calculateAverageRating(reviews)) ? 'fill' : 'regular'}
-                      size={18}verageRating(reviews)) ? 'text-accent' : 'text-border'}
-                      weight={star <= Math.round(calculateAverageRating(reviews)) ? 'fill' : 'regular'}
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-foreground">
-                  {calculateAverageRating(reviews).toFixed(1)}
-                </span>
-                <span className="text-xs md:text-sm text-muted-foreground">
-                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
-              </div>
-                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
-                {product.name}
-              </h1>
-                <p className="text-3xl md:text-4xl font-heading font-medium text-primary">
-                {product.name}
-                  {product.category === 'bespoke' && <span className="text-base md:text-lg text-muted-foreground"> starting</span>}
-                {customization && (
-                  <p className="text-lg md:text-xl text-muted-foreground">
-                  £{product.price.toLocaleString()}
-                  </p>
-                </p>
-              </div>
+            <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={18}
+                  weight={star <= Math.round(calculateAverageRating(reviews)) ? 'fill' : 'regular'}
+                  className={star <= Math.round(calculateAverageRating(reviews)) ? 'text-accent' : 'text-border'}
+                />
+              ))}
+              <span className="text-sm font-medium text-foreground ml-1">
+                {calculateAverageRating(reviews).toFixed(1)}
+              </span>
+              <span className="text-xs md:text-sm text-muted-foreground">
+                ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+              </span>
+            </div>
+
+            <h1 className="font-heading text-3xl md:text-5xl font-medium text-foreground mb-3 md:mb-4 leading-tight">
+              {product.name}
+            </h1>
+
+            <div>
+              <p className="text-3xl md:text-4xl font-heading font-medium text-primary">
+                £{product.price.toLocaleString()}
+                {product.category === 'bespoke' && <span className="text-base md:text-lg text-muted-foreground"> starting</span>}
+              </p>
+              {customization && (
                 <div className="mt-3 md:mt-4 p-3 md:p-4 bg-accent/5 border border-accent/20 rounded-lg">
                   <p className="font-heading text-xl md:text-2xl font-medium text-foreground">
-                  </p>
+                    Total: £{(product.price + calculateCustomizationPrice(customization)).toLocaleString()}
                   </p>
                 </div>
               )}
+            </div>
 
             <Separator />
-                    Total: £{(product.price + calculateCustomizationPrice(customization)).toLocaleString()}
+
             <div>
               <p className="text-foreground leading-relaxed text-base md:text-lg">
                 {product.description}
@@ -313,16 +312,18 @@ export function ProductPage() {
 
             <Separator />
 
+            <div>
               <h2 className="font-heading text-2xl md:text-3xl font-medium text-foreground mb-4 md:mb-6">
-                {product.description}
+                Customize Your Bed
               </h2>
               <BedCustomizer 
                 onCustomizationChange={handleCustomizationChange}
                 basePrice={product.price}
                 onBuyNow={addToCart}
               />
+            </div>
 
-                Customize Your Bed
+            <div className="space-y-4 md:space-y-5">
               {product.inStock ? (
                 <>
                   <div className="flex gap-2 md:gap-3">
@@ -331,17 +332,17 @@ export function ProductPage() {
                       className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 h-12 md:h-14 text-base md:text-lg font-semibold"
                       size="lg"
                     >
+                      <ShoppingCart size={20} className="mr-2" weight="bold" />
                       Add to Cart
-              {product.inStock ? (
+                    </Button>
                     <Button
-                        const customizationPrice = customization ? calculateCustomizationPrice(customization) : 0
-                    <Button
-                      }}
-                      size="lg"
-                      size="lg"
+                      variant="outline"
+                      onClick={() => toggleWishlist(product)}
+                      className={cn(
                         "h-12 md:h-14 px-3 md:px-4",
                         isInWishlist(product.id) ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-accent/30 hover:bg-accent/10"
                       )}
+                      size="lg"
                     >
                       <Heart 
                         size={24} 
@@ -350,27 +351,20 @@ export function ProductPage() {
                       />
                     </Button>
                   </div>
+
+                  <div className="flex flex-col items-center gap-2 md:gap-3 py-2">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2">
                       <span className="text-xs text-muted-foreground">Secure payment with</span>
                       <div className="flex items-center gap-1 md:gap-1.5">
                         <div className="h-5 px-1.5 bg-card border border-border rounded flex items-center justify-center">
-                    >
-                      <Heart 
-                        size={24} 
-                        weight={isInWishlist(product.id) ? "fill" : "regular"}
+                          <svg viewBox="0 0 48 32" className="h-3" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="48" height="32" rx="3" fill="#EB001B"/>
+                            <path d="M24 8a9.96 9.96 0 00-4 8c0 3.26 1.56 6.16 4 8a9.96 9.96 0 004-8c0-3.26-1.56-6.16-4-8z" fill="#FF5F00"/>
+                          </svg>
                         </div>
                         <div className="h-5 px-1.5 bg-card border border-border rounded flex items-center justify-center">
                           <svg viewBox="0 0 48 32" className="h-3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="48" height="32" rx="3" fill="#EB001B"/>
-                  <div className="flex flex-col items-center gap-2 md:gap-3 py-2">
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2">
-                            <path d="M24 8a9.96 9.96 0 00-4 8c0 3.26 1.56 6.16 4 8a9.96 9.96 0 004-8c0-3.26-1.56-6.16-4-8z" fill="#FF5F00"/>
-                      <div className="flex items-center gap-1 md:gap-1.5">
-                        <div className="h-5 px-1.5 bg-card border border-border rounded flex items-center justify-center">
-                          <svg viewBox="0 0 48 32" className="h-3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <svg viewBox="0 0 48 32" className="h-3" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21.5 8L18 24h-3l3.5-16h3zm13.5 10.5l1.8-5 1 5h-2.8zm3.5 5.5h2.7l-2.3-16h-2.5c-.5 0-1 .3-1.2.8l-4.2 15.2h3.2l.6-1.8h3.9l.8 1.8zm-8-5.3c0-4.2-5.8-4.4-5.7-6.3 0-.6.6-1.2 1.8-1.3.6 0 2.3-.1 4.2.7l.8-3.6c-1-.4-2.4-.7-4.1-.7-3.4 0-5.8 1.8-5.8 4.4 0 1.9 1.7 3 3 3.6 1.4.7 1.8 1.1 1.8 1.7 0 .9-1.1 1.3-2.1 1.3-1.8 0-2.7-.3-4.2-1l-.7 3.6c1 .4 2.7.8 4.5.8 3.6.1 6-1.7 6-4.5l.5.3zM17.5 8l-5.5 16h-3.2L6.5 11.2c-.2-.7-.3-1-.9-1.3C4.8 9.4 3.2 9 2 8.7l.1-.7h5.2c.7 0 1.3.5 1.5 1.3l1.3 7.1L13.5 8h3z" fill="white"/>
-                            <path d="M15.5 11.8l-2.2 8.4h-2.2l2.2-8.4h2.2zm11.8 5.5l1.2-3.3.7 3.3h-1.9zm2.5 2.9h2l-1.7-8.4h-1.9c-.4 0-.8.2-.9.6l-3.3 7.8h2.3l.5-1.2h2.8l.2 1.2zm-5.5-2.7c0-2.2-3-2.3-3-3.3 0-.3.3-.6.9-.7.3 0 1.2 0 2.2.4l.4-1.9c-.5-.2-1.3-.4-2.2-.4-2.3 0-3.9 1.2-3.9 2.9 0 1.3 1.1 2 2 2.4.9.4 1.2.7 1.2 1.1 0 .6-.7.9-1.4.9-1.2 0-1.8-.2-2.8-.7l-.5 2.4c.6.3 1.8.5 3 .5 2.5 0 4.1-1.2 4.1-3.1v-.5zm-9-6.2l-3.7 8.4h-2.4l-1.8-7c-.1-.4-.2-.5-.6-.7-.6-.3-1.7-.6-2.6-.8l.1-.4h4.5c.6 0 1.1.4 1.2 1.1l1.1 5.9 2.8-7h2.4z" fill="white"/>
                           </svg>
                         </div>
                         <div className="h-5 px-1.5 bg-card border border-border rounded flex items-center justify-center">
@@ -392,24 +386,28 @@ export function ProductPage() {
                       </div>
                     </div>
                   </div>
+
                   <p className="text-xs md:text-sm text-muted-foreground text-center">
                     In stock • Ready for customization
-                    <div className="flex items-center justify-center gap-2 md:gap-4 flex-wrap">
-                      <div className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 bg-accent/5 border border-accent/20 rounded-md">
-                        <ShieldCheck size={14} weight="fill" className="text-accent" />
+                  </p>
+                </>
+              ) : (
                 <>
-                      </div>
+                  <Button
                     onClick={() => {
-                        <Lock size={14} weight="fill" className="text-accent" />
-                      element?.scrollIntoView({ behavior: 'smooth' })
+                      navigate('/')
+                      setTimeout(() => {
+                        const element = document.getElementById('contact')
+                        element?.scrollIntoView({ behavior: 'smooth' })
+                      }, 100)
                     }}
-                    </div>
-                  </div>
-                  <p className="text-xs md:text-sm text-muted-foreground text-center">
+                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 h-12 md:h-14 text-base md:text-lg font-semibold"
+                    size="lg"
+                  >
                     <Sparkle size={20} className="mr-2" weight="fill" />
                     Request Consultation
                   </Button>
-              ) : (
+                  <p className="text-xs md:text-sm text-muted-foreground text-center">
                     Custom made to order • Contact us for details
                   </p>
                 </>
@@ -434,64 +432,67 @@ export function ProductPage() {
 
               <div className="grid gap-3 md:gap-4">
                 <div className="flex items-start gap-2.5 md:gap-3">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Package size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
+                  </div>
+                  <div className="flex-1">
                     <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Production Time</p>
                     <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
                       {product.category === 'bespoke' 
                         ? '8-12 weeks - Handcrafted to order'
                         : '6-8 weeks - Carefully crafted'}
-                <div>
+                    </p>
                   </div>
                 </div>
-                </div>
-              </div>
-tems-center justify-center flex-shrink-0 mt-0.5">
+
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <MapPin size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Delivery Coverage</p>
-                  </div>g-relaxed">
-                  <div className="flex-1">
+                    <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
+                      Free delivery across the UK. White-glove service included.
                     </p>
                   </div>
-                      {product.category === 'bespoke' 
+                </div>
 
                 <div className="flex items-start gap-2.5 md:gap-3">
-                    </p>x items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CalendarCheck size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
                   </div>
-                </div>
-lassName="flex-1">
+                  <div className="flex-1">
                     <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Estimated Arrival</p>
                     <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
                       Approximately {product.category === 'bespoke' ? '10-14 weeks' : '8-10 weeks'} from order. We'll keep you updated.
-                  </div>
-                  <div className="flex-1">
-                </div>
-              </div>
-
-                    </p>0">
-                  </div>
-                </div>ailable upon request.
-
-              </div>
-            </div>
-          </motion.div>
-                  </div>
-                  <div className="flex-1">
-        {relatedProducts.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-                    </p>{{ opacity: 1, y: 0 }}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 md:mt-5 pt-4 md:pt-5 border-t border-accent/20">
-              Similar Products
+                <p className="text-xs text-muted-foreground text-center leading-relaxed">
                   <strong>Note:</strong> Delivery times may vary during peak seasons. International shipping available upon request.
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                </p>
               </div>
-                <div
+            </div>
           </motion.div>
+        </div>
+        {relatedProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-24 bg-muted/20 rounded-2xl p-8"
+          >
+            <h2 className="font-heading text-3xl font-medium text-foreground mb-8">
+              Similar Products
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <div
+                  key={relatedProduct.id}
                   onClick={() => navigate(`/product/${relatedProduct.slug}`)}
                   className="group cursor-pointer"
                 >
