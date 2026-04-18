@@ -322,8 +322,6 @@ export function ProductPage() {
               />
             </div>
 
-            <Separator />
-
             <div className="space-y-4 sticky top-4 bg-background pt-4 pb-4">
               {product.inStock ? (
                 <>
