@@ -1,0 +1,100 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Badge } from '@/components/ui/badge'
+import { ShoppingBag, List } from '@phosphor-icons/react'
+import { useKV } from '@github/spark/hooks'
+import { CartItem } from '@/lib/types'
+
+interface NavigationProps {
+  onCartOpen: () => void
+  onNavigate: (section: string) => void
+  currentSection: string
+}
+
+export function Navigation({ onCartOpen, onNavigate, currentSection }: NavigationProps) {
+  const [cart] = useKV<CartItem[]>('cart', [])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const cartItemCount = (cart || []).reduce((sum, item) => sum + item.quantity, 0)
+
+  const navLinks = [
+    { id: 'home', label: 'Home' },
+    { id: 'shop', label: 'Shop' },
+    { id: 'about', label: 'About' },
+    { id: 'contact', label: 'Contact' }
+  ]
+
+  return (
+    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => onNavigate('home')}
+            className="font-heading text-2xl font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Nice Beds
+          </button>
+
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => onNavigate(link.id)}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  currentSection === link.id ? 'text-primary' : 'text-foreground'
+                }`}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onCartOpen}
+              className="relative"
+            >
+              <ShoppingBag size={20} weight="regular" />
+              {cartItemCount > 0 && (
+                <Badge 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-accent text-accent-foreground text-xs"
+                >
+                  {cartItemCount}
+                </Badge>
+              )}
+            </Button>
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon">
+                  <List size={24} weight="regular" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <div className="flex flex-col gap-6 mt-8">
+                  {navLinks.map((link) => (
+                    <button
+                      key={link.id}
+                      onClick={() => {
+                        onNavigate(link.id)
+                        setMobileMenuOpen(false)
+                      }}
+                      className={`text-left text-lg font-medium transition-colors hover:text-primary ${
+                        currentSection === link.id ? 'text-primary' : 'text-foreground'
+                      }`}
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}
