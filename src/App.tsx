@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
 import { ProductCard } from '@/components/ProductCard'
-import { ProductDetailDialog } from '@/components/ProductDetailDialog'
+import { ProductPage } from '@/components/ProductPage'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,15 +14,13 @@ import { Product } from '@/lib/types'
 import { MapPin, Phone, Envelope, Sparkle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
-function App() {
+function HomePage() {
+  const navigate = useNavigate()
   const [currentSection, setCurrentSection] = useState('home')
   const [cartOpen, setCartOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [productDialogOpen, setProductDialogOpen] = useState(false)
 
   const handleViewDetails = (product: Product) => {
-    setSelectedProduct(product)
-    setProductDialogOpen(true)
+    navigate(`/product/${product.slug}`)
   }
 
   const scrollToSection = (section: string) => {
@@ -344,13 +343,19 @@ function App() {
       </footer>
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
-      <ProductDetailDialog
-        product={selectedProduct}
-        open={productDialogOpen}
-        onOpenChange={setProductDialogOpen}
-      />
       <Toaster />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/product/:slug" element={<ProductPage />} />
+      </Routes>
+    </Router>
   )
 }
 

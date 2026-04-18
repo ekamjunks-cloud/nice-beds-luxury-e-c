@@ -20,11 +20,11 @@ This is an ecommerce showcase with cart functionality, product browsing, and inq
 - Success criteria: All products display with correct images, prices, dimensions, and descriptions
 
 **Product Detail View**
-- Functionality: Show comprehensive information about a specific bed including materials, dimensions, customization options, and multiple images
-- Purpose: Provide all information needed to make a purchase decision
-- Trigger: Clicking on a product card
-- Progression: Click product → View hero image → Read specifications → See customization options → Add to cart or request consultation
-- Success criteria: Users can view all product details and understand what they're purchasing
+- Functionality: Dedicated product page with comprehensive information including materials, dimensions, customization options, and interactive image carousel with multiple product views
+- Purpose: Provide all information needed to make a purchase decision in a focused, distraction-free environment
+- Trigger: Clicking on a product card or "View Details" button
+- Progression: Click product → Navigate to dedicated product page → View image carousel → Read full specifications → Select color options → Add to cart or request consultation → View similar products
+- Success criteria: Users can view all product details, navigate through image gallery, select options, and clearly understand what they're purchasing
 
 **Shopping Cart**
 - Functionality: Persist selected items with quantities and display running total
@@ -97,22 +97,26 @@ Animations should feel luxurious and considered - smooth, slightly slower than t
 
 - **Components**: 
   - Card: For product grid items with hover elevation effects
-  - Dialog: For product quick-view overlays and consultation forms
+  - Dialog: For consultation forms and modals (legacy support)
   - Sheet: For sliding cart drawer from right side
   - Button: Multiple variants - primary (filled brass), secondary (outlined), ghost for navigation
-  - Carousel: For product detail image galleries with thumbnail navigation
+  - Carousel: For product detail image galleries with thumbnail navigation and arrow controls
   - Form + Input + Textarea: For consultation request form with elegant validation
   - Badge: For "Bespoke Available" or "New" product tags in muted brass
   - Separator: For dividing sections with subtle lines
   - Scroll-area: For cart items when list becomes long
   - Avatar: For testimonials or team members in About section
+  - Router (React Router): For navigating between home page and individual product pages
 
 - **Customizations**: 
   - Product grid component with aspect ratio containers (4:3) for consistent imagery
+  - Full-page product view with large carousel gallery and detailed specifications layout
   - Hero section with full-width background image and centered content overlay
   - Sticky navigation bar with subtle shadow on scroll
   - Footer with multi-column layout for navigation, contact, and location
   - Price display component with proper GBP formatting
+  - Related products section with clickable cards on product pages
+  - "Back to Shop" navigation button on product pages
 
 - **States**: 
   - Buttons: Default (brass bg, white text) → Hover (darker brass with subtle shadow) → Active (pressed effect) → Disabled (muted with reduced opacity)
@@ -142,7 +146,10 @@ Animations should feel luxurious and considered - smooth, slightly slower than t
   - Navigation collapses to hamburger menu (Sheet component) at <768px
   - Product grid: 2 columns on mobile (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3)
   - Hero text sizing reduces from text-6xl to text-4xl
-  - Sticky "Add to Cart" bar appears at bottom on product detail pages
+  - Product page layout stacks vertically with image gallery first on mobile
+  - Image carousel thumbnail grid: 4 columns on all devices for consistency
+  - Sticky "Add to Cart" section on product pages for easy access
   - Cart drawer takes full width on mobile
   - Forms stack vertically with full-width inputs
   - Footer columns stack vertically with centered text
+  - Related products grid: single column on mobile, 3 columns on desktop
