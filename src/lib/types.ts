@@ -18,7 +18,11 @@ export interface Product {
 }
 
 export interface BedCustomization {
-  size: 'Double' | 'King' | 'Super King'
+  size: 'Double' | 'King' | 'Super King' | 'Custom'
+  customSize?: {
+    width: string
+    length: string
+  }
   fabric: 'Naples' | 'Plush Velvet'
   color: string
   ottomanStorage: boolean

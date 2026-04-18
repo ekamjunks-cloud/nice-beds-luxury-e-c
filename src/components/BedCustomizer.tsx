@@ -4,11 +4,16 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Check, ShoppingCart, Ruler, Swatches, Palette, Package, Vault, HardDrives, Rows, Spinner } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
 export interface BedCustomization {
-  size: 'Double' | 'King' | 'Super King'
+  size: 'Double' | 'King' | 'Super King' | 'Custom'
+  customSize?: {
+    width: string
+    length: string
+  }
   fabric: 'Naples' | 'Plush Velvet'
   color: string
   ottomanStorage: boolean
@@ -43,6 +48,12 @@ const sizeOptions = [
     dimensions: '180 × 200 cm',
     price: 400,
     description: 'Ultimate luxury and space'
+  },
+  { 
+    name: 'Custom', 
+    dimensions: 'Your dimensions',
+    price: 500,
+    description: 'Bespoke size tailored to your needs'
   },
 ]
 
@@ -137,9 +148,22 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
     if (updates.ottomanStorage === true && !newCustomization.gasLift) {
       newCustomization.gasLift = true
     }
+
+    if (updates.size && updates.size !== 'Custom') {
+      delete newCustomization.customSize
+    }
     
     setCustomization(newCustomization)
     onCustomizationChange?.(newCustomization)
+  }
+
+  const updateCustomSize = (field: 'width' | 'length', value: string) => {
+    const newCustomSize = {
+      ...customization.customSize,
+      [field]: value
+    } as { width: string; length: string }
+    
+    updateCustomization({ customSize: newCustomSize })
   }
 
   const calculatePrice = () => {
@@ -187,7 +211,7 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
           </div>
           <Badge variant="secondary" className="text-xs px-2 py-0.5">Step 1</Badge>
         </div>
-        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-2">
           {sizeOptions.map((size) => (
             <motion.div
               key={size.name}
@@ -226,6 +250,56 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
             </motion.div>
           ))}
         </div>
+
+        {customization.size === 'Custom' && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            transition={{ duration: 0.3 }}
+            className="pt-2"
+          >
+            <Card className="p-4 bg-accent/5 border-accent/30">
+              <h4 className="font-heading text-base md:text-lg font-medium mb-3 text-foreground">
+                Enter Custom Dimensions
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="custom-width" className="text-sm font-medium text-foreground mb-1.5 block">
+                    Width (cm)
+                  </label>
+                  <Input
+                    id="custom-width"
+                    type="number"
+                    placeholder="e.g. 150"
+                    value={customization.customSize?.width || ''}
+                    onChange={(e) => updateCustomSize('width', e.target.value)}
+                    className="bg-card"
+                    min="80"
+                    max="300"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="custom-length" className="text-sm font-medium text-foreground mb-1.5 block">
+                    Length (cm)
+                  </label>
+                  <Input
+                    id="custom-length"
+                    type="number"
+                    placeholder="e.g. 200"
+                    value={customization.customSize?.length || ''}
+                    onChange={(e) => updateCustomSize('length', e.target.value)}
+                    className="bg-card"
+                    min="180"
+                    max="250"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 italic">
+                Custom sizes are handcrafted to order. Delivery may take 6-8 weeks.
+              </p>
+            </Card>
+          </motion.div>
+        )}
       </motion.div>
 
       <Separator className="my-4 md:my-5" />
