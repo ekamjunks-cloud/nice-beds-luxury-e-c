@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { Check, ShoppingCart } from '@phosphor-icons/react'
+import { Check, ShoppingCart, Ruler, Swatches, Palette, Package, Vault, HardDrives, Rows, Spinner } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 
 export interface BedCustomization {
@@ -177,9 +177,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
-            Select Size
-          </h3>
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <Ruler size={18} weight="bold" className="text-accent md:w-5 md:h-5" />
+            </div>
+            <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
+              Select Size
+            </h3>
+          </div>
           <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 1</Badge>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -208,7 +213,20 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     <Check size={14} weight="bold" className="text-accent-foreground" />
                   </div>
                 )}
-                <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{size.name}</h4>
+                <div className="flex items-start gap-3 mb-2">
+                  <div className={cn(
+                    "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                    customization.size === size.name ? 'bg-accent/20' : 'bg-muted'
+                  )}>
+                    <Ruler size={20} weight="duotone" className={cn(
+                      "transition-colors",
+                      customization.size === size.name ? "text-accent" : "text-muted-foreground"
+                    )} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{size.name}</h4>
+                  </div>
+                </div>
                 <p className="text-sm text-muted-foreground mb-2">{size.dimensions}</p>
                 <p className="font-semibold text-base text-primary">
                   {size.price === 0 ? 'Base price' : `+£${size.price}`}
@@ -227,9 +245,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
-            Choose Fabric & Color
-          </h3>
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <Swatches size={18} weight="bold" className="text-accent md:w-5 md:h-5" />
+            </div>
+            <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
+              Choose Fabric & Color
+            </h3>
+          </div>
           <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 2</Badge>
         </div>
         
@@ -260,7 +283,20 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                       <Check size={14} weight="bold" className="text-accent-foreground" />
                     </div>
                   )}
-                  <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{fabricOption.fabric}</h4>
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className={cn(
+                      "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                      customization.fabric === fabricOption.fabric ? 'bg-accent/20' : 'bg-muted'
+                    )}>
+                      <Swatches size={20} weight="duotone" className={cn(
+                        "transition-colors",
+                        customization.fabric === fabricOption.fabric ? "text-accent" : "text-muted-foreground"
+                      )} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{fabricOption.fabric}</h4>
+                    </div>
+                  </div>
                   <p className="text-sm text-muted-foreground italic mb-2">{fabricOption.texture}</p>
                   <p className="font-semibold text-base text-primary">
                     {fabricOption.price === 0 ? 'Included' : `+£${fabricOption.price}`}
@@ -277,9 +313,12 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               transition={{ duration: 0.3 }}
               className="pt-2"
             >
-              <h4 className="font-heading text-lg md:text-xl font-medium text-foreground mb-3 md:mb-4">
-                Available Colors
-              </h4>
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <Palette size={16} weight="bold" className="text-accent" />
+                <h4 className="font-heading text-lg md:text-xl font-medium text-foreground">
+                  Available Colors
+                </h4>
+              </div>
               <div className="grid grid-cols-4 gap-3">
                 {selectedFabricOption.colors.map((color) => (
                   <motion.div
@@ -338,9 +377,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         transition={{ duration: 0.4, delay: 0.2 }}
       >
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
-            Storage & Base
-          </h3>
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <Package size={18} weight="bold" className="text-accent md:w-5 md:h-5" />
+            </div>
+            <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
+              Storage & Base
+            </h3>
+          </div>
           <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 3</Badge>
         </div>
         <div className="space-y-3">
@@ -367,9 +411,30 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                 )}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-heading text-lg font-medium mb-1">{option.name}</h4>
-                    <p className="text-sm text-muted-foreground leading-snug">{option.description}</p>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={cn(
+                      "w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                      (option.id === 'ottoman' && customization.ottomanStorage) ||
+                      (option.id === 'metalBase' && customization.metalBase)
+                        ? 'bg-accent/20'
+                        : 'bg-muted'
+                    )}>
+                      {option.id === 'ottoman' ? (
+                        <Vault size={20} weight="duotone" className={cn(
+                          "transition-colors",
+                          customization.ottomanStorage ? "text-accent" : "text-muted-foreground"
+                        )} />
+                      ) : (
+                        <Spinner size={20} weight="duotone" className={cn(
+                          "transition-colors",
+                          customization.metalBase ? "text-accent" : "text-muted-foreground"
+                        )} />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-heading text-lg font-medium mb-1">{option.name}</h4>
+                      <p className="text-sm text-muted-foreground leading-snug">{option.description}</p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <p className="font-semibold text-base text-primary whitespace-nowrap">+£{option.price}</p>
@@ -403,9 +468,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         transition={{ duration: 0.4, delay: 0.3 }}
       >
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
-            Base Type
-          </h3>
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <HardDrives size={18} weight="bold" className="text-accent md:w-5 md:h-5" />
+            </div>
+            <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
+              Base Type
+            </h3>
+          </div>
           <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 4</Badge>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -434,7 +504,27 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     <Check size={14} weight="bold" className="text-accent-foreground" />
                   </div>
                 )}
-                <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{base.name}</h4>
+                <div className="flex items-start gap-3 mb-2">
+                  <div className={cn(
+                    "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                    customization.baseType === base.name ? 'bg-accent/20' : 'bg-muted'
+                  )}>
+                    {base.name === 'Slats' ? (
+                      <Rows size={20} weight="duotone" className={cn(
+                        "transition-colors",
+                        customization.baseType === base.name ? "text-accent" : "text-muted-foreground"
+                      )} />
+                    ) : (
+                      <HardDrives size={20} weight="duotone" className={cn(
+                        "transition-colors",
+                        customization.baseType === base.name ? "text-accent" : "text-muted-foreground"
+                      )} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{base.name}</h4>
+                  </div>
+                </div>
                 <p className="text-sm text-muted-foreground mb-2 leading-snug">{base.description}</p>
                 <p className="font-semibold text-base text-primary">
                   {base.price === 0 ? 'Included' : `+£${base.price}`}
