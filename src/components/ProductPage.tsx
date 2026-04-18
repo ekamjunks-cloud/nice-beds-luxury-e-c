@@ -156,7 +156,7 @@ export function ProductPage() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-4"
+            className="space-y-4 lg:sticky lg:top-24 lg:self-start"
           >
             <div className="relative rounded-lg overflow-hidden bg-muted/20">
               <Carousel
