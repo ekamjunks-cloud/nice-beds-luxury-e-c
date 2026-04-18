@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from '@/components/ui/carousel'
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
+import { BedCustomizer, BedCustomization } from '@/components/BedCustomizer'
 import { products } from '@/lib/products'
 import { Product, CartItem } from '@/lib/types'
 import { Ruler, Sparkle, ArrowLeft, ShoppingCart } from '@phosphor-icons/react'
@@ -21,7 +22,7 @@ export function ProductPage() {
   const [, setCart] = useKV<CartItem[]>('cart', [])
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
-  const [selectedColor, setSelectedColor] = useState<string>('')
+  const [customization, setCustomization] = useState<BedCustomization | null>(null)
 
   const product = products.find(p => p.slug === slug)
 
