@@ -12,9 +12,10 @@ import { ReviewsSection } from '@/components/ReviewsSection'
 import { products } from '@/lib/products'
 import { getProductReviews, calculateAverageRating } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
-import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star, Heart } from '@phosphor-icons/react'
+import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star, Heart, Clock } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { useWishlist } from '@/hooks/use-wishlist'
+import { useRecentlyViewed } from '@/hooks/use-recently-viewed'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
@@ -26,12 +27,19 @@ export function ProductPage() {
   const navigate = useNavigate()
   const [, setCart] = useKV<CartItem[]>('cart', [])
   const { isInWishlist, toggleWishlist } = useWishlist()
+  const { addToRecentlyViewed, getRecentlyViewedProducts } = useRecentlyViewed()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
   const [customization, setCustomization] = useState<BedCustomization | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
 
   const product = products.find(p => p.slug === slug)
+
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed(product.id)
+    }
+  }, [product?.id])
 
   useEffect(() => {
     if (!carouselApi) return
@@ -129,6 +137,8 @@ export function ProductPage() {
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
     .slice(0, 3)
+  
+  const recentlyViewedProducts = getRecentlyViewedProducts(products, product.id).slice(0, 4)
 
   const reviews = getProductReviews(product.id)
 
@@ -505,6 +515,46 @@ export function ProductPage() {
                   <h3 className="font-heading text-xl font-medium mb-2">{relatedProduct.name}</h3>
                   <p className="text-2xl font-heading font-medium text-primary">
                     £{relatedProduct.price.toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {recentlyViewedProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-24 bg-muted/20 rounded-2xl p-8"
+          >
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                <Clock size={20} weight="bold" className="text-accent" />
+              </div>
+              <h2 className="font-heading text-3xl font-medium text-foreground">
+                Recently Viewed
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {recentlyViewedProducts.map((recentProduct) => (
+                <div
+                  key={recentProduct.id}
+                  onClick={() => navigate(`/product/${recentProduct.slug}`)}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4 ring-2 ring-border group-hover:ring-accent transition-all duration-300">
+                    <img
+                      src={recentProduct.images[0]}
+                      alt={recentProduct.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 className="font-heading text-lg font-medium mb-2 line-clamp-1">{recentProduct.name}</h3>
+                  <p className="text-xl font-heading font-medium text-primary">
+                    £{recentProduct.price.toLocaleString()}
                   </p>
                 </div>
               ))}
