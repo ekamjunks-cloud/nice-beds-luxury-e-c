@@ -1,16 +1,11 @@
 import { useKV } from '@github/spark/hooks'
-import { Product } from '@/lib/types'
+import { Product, BedCustomization, WishlistItem } from '@/lib/types'
 import { toast } from 'sonner'
-
-export interface WishlistItem {
-  product: Product
-  addedAt: number
-}
 
 export function useWishlist() {
   const [wishlist, setWishlist] = useKV<WishlistItem[]>('wishlist', [])
 
-  const addToWishlist = (product: Product) => {
+  const addToWishlist = (product: Product, customization?: BedCustomization, customizationPrice?: number) => {
     setWishlist((current = []) => {
       const exists = current.some(item => item.product.id === product.id)
       if (exists) {
@@ -18,7 +13,12 @@ export function useWishlist() {
         return current
       }
       toast.success('Added to wishlist')
-      return [...current, { product, addedAt: Date.now() }]
+      return [...current, { 
+        product, 
+        addedAt: Date.now(),
+        customization,
+        customizationPrice
+      }]
     })
   }
 
@@ -34,11 +34,11 @@ export function useWishlist() {
     return (wishlist || []).some(item => item.product.id === productId)
   }
 
-  const toggleWishlist = (product: Product) => {
+  const toggleWishlist = (product: Product, customization?: BedCustomization, customizationPrice?: number) => {
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id)
     } else {
-      addToWishlist(product)
+      addToWishlist(product, customization, customizationPrice)
     }
   }
 

@@ -27,6 +27,13 @@ export interface BedCustomization {
   baseType: 'Slats' | 'Board'
 }
 
+export interface WishlistItem {
+  product: Product
+  addedAt: number
+  customization?: BedCustomization
+  customizationPrice?: number
+}
+
 export interface CartItem {
   product: Product
   quantity: number

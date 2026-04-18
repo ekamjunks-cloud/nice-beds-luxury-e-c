@@ -343,7 +343,10 @@ export function ProductPage() {
                       Add to Cart
                     </Button>
                     <Button
-                      onClick={() => toggleWishlist(product)}
+                      onClick={() => {
+                        const customizationPrice = customization ? calculateCustomizationPrice(customization) : 0
+                        toggleWishlist(product, customization || undefined, customizationPrice)
+                      }}
                       variant={isInWishlist(product.id) ? "default" : "outline"}
                       size="lg"
                       className={isInWishlist(product.id) ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-accent/30 hover:bg-accent/10"}
