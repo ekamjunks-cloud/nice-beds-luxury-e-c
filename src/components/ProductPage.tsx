@@ -19,6 +19,7 @@ import { useRecentlyViewed } from '@/hooks/use-recently-viewed'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Toaster } from '@/components/ui/sonner'
+import { cn } from '@/lib/utils'
 
 export function ProductPage() {
   const [cartOpen, setCartOpen] = useState(false)
@@ -160,22 +161,22 @@ export function ProductPage() {
       />
       
       <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="mb-6 hover:bg-accent/10"
+          className="mb-4 md:mb-6 hover:bg-accent/10"
         >
           <ArrowLeft size={20} className="mr-2" />
           Back to Shop
         </Button>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-4 lg:sticky lg:top-24 lg:self-start"
+            className="space-y-3 md:space-y-4 lg:sticky lg:top-24 lg:self-start"
           >
             <div className="relative rounded-lg overflow-hidden bg-muted/20">
               <Carousel
@@ -265,15 +266,15 @@ export function ProductPage() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-8"
+            className="space-y-5 md:space-y-6 lg:space-y-8"
           >
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      size={20}
+                      size={18}
                       weight={star <= Math.round(calculateAverageRating(reviews)) ? 'fill' : 'regular'}
                       className={star <= Math.round(calculateAverageRating(reviews)) ? 'text-accent' : 'text-border'}
                     />
@@ -282,27 +283,27 @@ export function ProductPage() {
                 <span className="text-sm font-medium text-foreground">
                   {calculateAverageRating(reviews).toFixed(1)}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs md:text-sm text-muted-foreground">
                   ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
                 </span>
               </div>
-              <h1 className="font-heading text-5xl font-medium text-foreground mb-4">
+              <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-medium text-foreground mb-3 md:mb-4 leading-tight">
                 {product.name}
               </h1>
-              <div className="flex items-baseline gap-3">
-                <p className="text-4xl font-heading font-medium text-primary">
+              <div className="flex flex-wrap items-baseline gap-2 md:gap-3">
+                <p className="text-3xl md:text-4xl font-heading font-medium text-primary">
                   £{product.price.toLocaleString()}
-                  {product.category === 'bespoke' && <span className="text-lg text-muted-foreground"> starting</span>}
+                  {product.category === 'bespoke' && <span className="text-base md:text-lg text-muted-foreground"> starting</span>}
                 </p>
                 {customization && (
-                  <p className="text-xl text-muted-foreground">
-                    + £{calculateCustomizationPrice(customization).toLocaleString()} customization
+                  <p className="text-lg md:text-xl text-muted-foreground">
+                    + £{calculateCustomizationPrice(customization).toLocaleString()} extras
                   </p>
                 )}
               </div>
               {customization && (
-                <div className="mt-3 p-4 bg-accent/5 border border-accent/20 rounded-lg">
-                  <p className="font-heading text-2xl font-medium text-foreground">
+                <div className="mt-3 md:mt-4 p-3 md:p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                  <p className="font-heading text-xl md:text-2xl font-medium text-foreground">
                     Total: £{(product.price + calculateCustomizationPrice(customization)).toLocaleString()}
                   </p>
                 </div>
@@ -312,7 +313,7 @@ export function ProductPage() {
             <Separator />
 
             <div>
-              <p className="text-foreground leading-relaxed text-lg">
+              <p className="text-foreground leading-relaxed text-base md:text-lg">
                 {product.description}
               </p>
             </div>
@@ -320,7 +321,7 @@ export function ProductPage() {
             <Separator />
 
             <div>
-              <h2 className="font-heading text-3xl font-medium text-foreground mb-6">
+              <h2 className="font-heading text-2xl md:text-3xl font-medium text-foreground mb-4 md:mb-6">
                 Customize Your Bed
               </h2>
               <BedCustomizer 
@@ -330,13 +331,13 @@ export function ProductPage() {
               />
             </div>
 
-            <div className="space-y-4 sticky top-24 bg-background pt-4 pb-4 z-10">
+            <div className="space-y-3 md:space-y-4 sticky top-20 md:top-24 bg-background pt-3 md:pt-4 pb-3 md:pb-4 z-10">
               {product.inStock ? (
                 <>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 md:gap-3">
                     <Button
                       onClick={addToCart}
-                      className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
+                      className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 h-12 md:h-14 text-base md:text-lg font-semibold"
                       size="lg"
                     >
                       <ShoppingCart size={20} className="mr-2" weight="bold" />
@@ -349,7 +350,10 @@ export function ProductPage() {
                       }}
                       variant={isInWishlist(product.id) ? "default" : "outline"}
                       size="lg"
-                      className={isInWishlist(product.id) ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-accent/30 hover:bg-accent/10"}
+                      className={cn(
+                        "h-12 md:h-14 px-3 md:px-4",
+                        isInWishlist(product.id) ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-accent/30 hover:bg-accent/10"
+                      )}
                     >
                       <Heart 
                         size={24} 
@@ -358,10 +362,10 @@ export function ProductPage() {
                       />
                     </Button>
                   </div>
-                  <div className="flex flex-col items-center gap-3 py-2">
-                    <div className="flex items-center justify-center gap-2">
+                  <div className="flex flex-col items-center gap-2 md:gap-3 py-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2">
                       <span className="text-xs text-muted-foreground">Secure payment with</span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1 md:gap-1.5">
                         <div className="h-5 px-1.5 bg-card border border-border rounded flex items-center justify-center">
                           <svg viewBox="0 0 48 32" className="h-3" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="48" height="32" rx="3" fill="#1434CB"/>
@@ -390,18 +394,18 @@ export function ProductPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-center gap-4">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-accent/5 border border-accent/20 rounded-md">
-                        <ShieldCheck size={16} weight="fill" className="text-accent" />
+                    <div className="flex items-center justify-center gap-2 md:gap-4 flex-wrap">
+                      <div className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 bg-accent/5 border border-accent/20 rounded-md">
+                        <ShieldCheck size={14} weight="fill" className="text-accent" />
                         <span className="text-xs font-medium text-foreground">SSL Secured</span>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-accent/5 border border-accent/20 rounded-md">
-                        <Lock size={16} weight="fill" className="text-accent" />
+                      <div className="flex items-center gap-1 md:gap-1.5 px-2 md:px-2.5 py-1 bg-accent/5 border border-accent/20 rounded-md">
+                        <Lock size={14} weight="fill" className="text-accent" />
                         <span className="text-xs font-medium text-foreground">Safe Checkout</span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground text-center">
+                  <p className="text-xs md:text-sm text-muted-foreground text-center">
                     In stock • Ready for customization
                   </p>
                 </>
@@ -430,60 +434,60 @@ export function ProductPage() {
 
             <Separator />
 
-            <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg p-6 border border-accent/20">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Truck size={24} weight="bold" className="text-accent" />
+            <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-lg p-4 md:p-6 border border-accent/20">
+              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-5">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Truck size={20} weight="bold" className="text-accent md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-2xl font-medium text-foreground">Delivery Estimate</h3>
-                  <p className="text-sm text-muted-foreground">Free UK-wide delivery included</p>
+                  <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground leading-tight">Delivery Estimate</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground">Free UK-wide delivery</p>
                 </div>
               </div>
 
-              <div className="grid gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Package size={20} weight="duotone" className="text-primary" />
+              <div className="grid gap-3 md:gap-4">
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Package size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Production Time</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
+                    <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Production Time</p>
+                    <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
                       {product.category === 'bespoke' 
-                        ? '8-12 weeks - Each piece is handcrafted to order by our skilled artisans in Leeds'
-                        : '6-8 weeks - Carefully crafted with attention to every detail'}
+                        ? '8-12 weeks - Handcrafted to order'
+                        : '6-8 weeks - Carefully crafted'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MapPin size={20} weight="duotone" className="text-primary" />
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPin size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Delivery Coverage</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
-                      Free delivery to anywhere in the UK. Professional two-person delivery team included for safe installation.
+                    <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Delivery Coverage</p>
+                    <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
+                      Free UK delivery. Professional two-person team included.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CalendarCheck size={20} weight="duotone" className="text-primary" />
+                <div className="flex items-start gap-2.5 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-card flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CalendarCheck size={18} weight="duotone" className="text-primary md:w-5 md:h-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-foreground mb-1">Estimated Arrival</p>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
-                      Your bed will arrive approximately {product.category === 'bespoke' ? '10-14 weeks' : '8-10 weeks'} from order confirmation. We'll keep you updated at every stage.
+                    <p className="font-semibold text-sm md:text-base text-foreground mb-0.5 md:mb-1">Estimated Arrival</p>
+                    <p className="text-xs md:text-sm text-foreground/80 leading-relaxed">
+                      Approximately {product.category === 'bespoke' ? '10-14 weeks' : '8-10 weeks'} from order. We'll keep you updated.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 pt-5 border-t border-accent/20">
+              <div className="mt-4 md:mt-5 pt-4 md:pt-5 border-t border-accent/20">
                 <p className="text-xs text-foreground/70 leading-relaxed">
-                  <strong>Note:</strong> Delivery times may vary during peak seasons. We'll provide a more precise delivery window once your order enters production. International shipping available upon request.
+                  <strong>Note:</strong> Delivery times may vary during peak seasons. International shipping available upon request.
                 </p>
               </div>
             </div>

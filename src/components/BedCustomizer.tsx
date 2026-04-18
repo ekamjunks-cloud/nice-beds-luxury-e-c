@@ -170,19 +170,19 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
   const selectedFabricOption = fabricColorOptions.find(f => f.fabric === customization.fabric)
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-5 md:space-y-6', className)}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-heading text-lg md:text-xl font-medium text-foreground">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
             Select Size
           </h3>
-          <Badge variant="secondary" className="text-xs">Step 1</Badge>
+          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 1</Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {sizeOptions.map((size) => (
             <motion.div
               key={size.name}
@@ -192,25 +192,25 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               <Card
                 onClick={() => updateCustomization({ size: size.name as BedCustomization['size'] })}
                 className={cn(
-                  'relative p-2.5 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
+                  'relative p-4 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
                   customization.size === size.name
                     ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
                     : 'border-border hover:border-accent/50'
                 )}
               >
                 {size.popular && (
-                  <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs">
+                  <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs px-2 py-0.5">
                     Popular
                   </Badge>
                 )}
                 {customization.size === size.name && (
-                  <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
-                    <Check size={12} weight="bold" className="text-accent-foreground" />
+                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+                    <Check size={14} weight="bold" className="text-accent-foreground" />
                   </div>
                 )}
-                <h4 className="font-heading text-base md:text-lg font-medium mb-0.5 pr-5">{size.name}</h4>
-                <p className="text-xs text-muted-foreground mb-0.5">{size.dimensions}</p>
-                <p className="font-semibold text-sm text-primary">
+                <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{size.name}</h4>
+                <p className="text-sm text-muted-foreground mb-2">{size.dimensions}</p>
+                <p className="font-semibold text-base text-primary">
                   {size.price === 0 ? 'Base price' : `+£${size.price}`}
                 </p>
               </Card>
@@ -219,22 +219,22 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         </div>
       </motion.div>
 
-      <Separator />
+      <Separator className="my-5 md:my-6" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-heading text-lg md:text-xl font-medium text-foreground">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
             Choose Fabric & Color
           </h3>
-          <Badge variant="secondary" className="text-xs">Step 2</Badge>
+          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 2</Badge>
         </div>
         
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {fabricColorOptions.map((fabricOption) => (
               <motion.div
                 key={fabricOption.fabric}
@@ -244,25 +244,25 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                 <Card
                   onClick={() => updateCustomization({ fabric: fabricOption.fabric as BedCustomization['fabric'] })}
                   className={cn(
-                    'relative p-2.5 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
+                    'relative p-4 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
                     customization.fabric === fabricOption.fabric
                       ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
                       : 'border-border hover:border-accent/50'
                   )}
                 >
                   {fabricOption.popular && (
-                    <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs">
+                    <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs px-2 py-0.5">
                       Popular
                     </Badge>
                   )}
                   {customization.fabric === fabricOption.fabric && (
-                    <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
-                      <Check size={12} weight="bold" className="text-accent-foreground" />
+                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+                      <Check size={14} weight="bold" className="text-accent-foreground" />
                     </div>
                   )}
-                  <h4 className="font-heading text-base md:text-lg font-medium mb-0.5 pr-5">{fabricOption.fabric}</h4>
-                  <p className="text-xs text-muted-foreground italic mb-1">{fabricOption.texture}</p>
-                  <p className="font-semibold text-sm text-primary">
+                  <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{fabricOption.fabric}</h4>
+                  <p className="text-sm text-muted-foreground italic mb-2">{fabricOption.texture}</p>
+                  <p className="font-semibold text-base text-primary">
                     {fabricOption.price === 0 ? 'Included' : `+£${fabricOption.price}`}
                   </p>
                 </Card>
@@ -275,11 +275,12 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               transition={{ duration: 0.3 }}
+              className="pt-2"
             >
-              <h4 className="font-heading text-lg md:text-xl font-medium text-foreground mb-3">
-                Available Colors for {customization.fabric}
+              <h4 className="font-heading text-lg md:text-xl font-medium text-foreground mb-3 md:mb-4">
+                Available Colors
               </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
                 {selectedFabricOption.colors.map((color) => (
                   <motion.div
                     key={color.name}
@@ -292,7 +293,7 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     >
                       <div
                         className={cn(
-                          'aspect-square rounded-lg mb-1.5 border-3 transition-all duration-300',
+                          'aspect-square rounded-lg mb-2 border-3 transition-all duration-300',
                           customization.color === color.name
                             ? 'border-accent ring-4 ring-accent/20 shadow-lg scale-105'
                             : 'border-border group-hover:border-accent/50 group-hover:shadow-md'
@@ -307,15 +308,15 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                               exit={{ scale: 0 }}
                               className="w-full h-full flex items-center justify-center"
                             >
-                              <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md">
-                                <Check size={16} weight="bold" className="text-accent" />
+                              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md">
+                                <Check size={18} weight="bold" className="text-accent" />
                               </div>
                             </motion.div>
                           )}
                         </AnimatePresence>
                       </div>
                       <p className={cn(
-                        'text-xs md:text-sm font-medium transition-colors text-center leading-tight',
+                        'text-sm font-medium transition-colors text-center leading-tight',
                         customization.color === color.name ? 'text-accent font-semibold' : 'text-foreground'
                       )}>
                         {color.name}
@@ -329,20 +330,20 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         </div>
       </motion.div>
 
-      <Separator />
+      <Separator className="my-5 md:my-6" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-heading text-lg md:text-xl font-medium text-foreground">
-            Storage & Base Options
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
+            Storage & Base
           </h3>
-          <Badge variant="secondary" className="text-xs">Step 3</Badge>
+          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 3</Badge>
         </div>
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {storageOptions.map((option) => (
             <motion.div
               key={option.id}
@@ -358,7 +359,7 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                   }
                 }}
                 className={cn(
-                  'p-2.5 cursor-pointer transition-all duration-300 border-2 hover:shadow-md',
+                  'p-4 cursor-pointer transition-all duration-300 border-2 hover:shadow-md',
                   (option.id === 'ottoman' && customization.ottomanStorage) ||
                   (option.id === 'metalBase' && customization.metalBase)
                     ? 'border-accent bg-accent/5'
@@ -367,14 +368,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-heading text-base font-medium mb-0.5">{option.name}</h4>
-                    <p className="text-xs text-muted-foreground leading-snug">{option.description}</p>
+                    <h4 className="font-heading text-lg font-medium mb-1">{option.name}</h4>
+                    <p className="text-sm text-muted-foreground leading-snug">{option.description}</p>
                   </div>
-                  <div className="flex items-center gap-2.5 flex-shrink-0">
-                    <p className="font-semibold text-sm text-primary whitespace-nowrap">+£{option.price}</p>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <p className="font-semibold text-base text-primary whitespace-nowrap">+£{option.price}</p>
                     <div
                       className={cn(
-                        'w-4 h-4 rounded-md border-2 flex items-center justify-center transition-all duration-300 flex-shrink-0',
+                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-300 flex-shrink-0',
                         (option.id === 'ottoman' && customization.ottomanStorage) ||
                         (option.id === 'metalBase' && customization.metalBase)
                           ? 'bg-accent border-accent'
@@ -383,7 +384,7 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
                     >
                       {((option.id === 'ottoman' && customization.ottomanStorage) ||
                         (option.id === 'metalBase' && customization.metalBase)) && (
-                        <Check size={12} weight="bold" className="text-accent-foreground" />
+                        <Check size={14} weight="bold" className="text-accent-foreground" />
                       )}
                     </div>
                   </div>
@@ -394,20 +395,20 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         </div>
       </motion.div>
 
-      <Separator />
+      <Separator className="my-5 md:my-6" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-heading text-lg md:text-xl font-medium text-foreground">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h3 className="font-heading text-xl md:text-2xl font-medium text-foreground">
             Base Type
           </h3>
-          <Badge variant="secondary" className="text-xs">Step 4</Badge>
+          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">Step 4</Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {baseOptions.map((base) => (
             <motion.div
               key={base.name}
@@ -417,25 +418,25 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
               <Card
                 onClick={() => updateCustomization({ baseType: base.name as BedCustomization['baseType'] })}
                 className={cn(
-                  'relative p-2.5 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
+                  'relative p-4 cursor-pointer transition-all duration-300 border-2 hover:shadow-lg h-full',
                   customization.baseType === base.name
                     ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
                     : 'border-border hover:border-accent/50'
                 )}
               >
                 {base.popular && (
-                  <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs">
+                  <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs px-2 py-0.5">
                     Popular
                   </Badge>
                 )}
                 {customization.baseType === base.name && (
-                  <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
-                    <Check size={12} weight="bold" className="text-accent-foreground" />
+                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+                    <Check size={14} weight="bold" className="text-accent-foreground" />
                   </div>
                 )}
-                <h4 className="font-heading text-base md:text-lg font-medium mb-0.5 pr-5">{base.name}</h4>
-                <p className="text-xs text-muted-foreground mb-1 leading-snug">{base.description}</p>
-                <p className="font-semibold text-sm text-primary">
+                <h4 className="font-heading text-lg md:text-xl font-medium mb-1 pr-7">{base.name}</h4>
+                <p className="text-sm text-muted-foreground mb-2 leading-snug">{base.description}</p>
+                <p className="font-semibold text-base text-primary">
                   {base.price === 0 ? 'Included' : `+£${base.price}`}
                 </p>
               </Card>
@@ -444,30 +445,30 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
         </div>
       </motion.div>
 
-      <Separator className="my-6" />
+      <Separator className="my-6 md:my-7" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.4 }}
-        className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-2 border-accent rounded-lg p-4 shadow-xl"
+        className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-2 border-accent rounded-xl p-4 md:p-5 shadow-xl"
       >
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Base Price</p>
-              <p className="font-heading text-lg font-medium text-foreground">
+        <div className="space-y-3 md:space-y-4">
+          <div className="grid grid-cols-3 gap-3 md:gap-4">
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground mb-1">Base Price</p>
+              <p className="font-heading text-lg md:text-xl font-medium text-foreground">
                 £{basePrice.toLocaleString()}
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-0.5">Customization</p>
-              <p className="font-heading text-lg font-medium text-primary">
+              <p className="text-xs text-muted-foreground mb-1">Extras</p>
+              <p className="font-heading text-lg md:text-xl font-medium text-primary">
                 +£{calculatePrice()}
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground mb-0.5">Total Price</p>
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground mb-1">Total</p>
               <p className="font-heading text-2xl md:text-3xl font-semibold text-accent">
                 £{(basePrice + calculatePrice()).toLocaleString()}
               </p>
@@ -476,14 +477,14 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
           
           <Separator className="bg-border/50" />
           
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <Badge variant="secondary" className="text-xs">{customization.size}</Badge>
-            <Badge variant="secondary" className="text-xs">{customization.fabric}</Badge>
-            <Badge variant="secondary" className="text-xs">{customization.color}</Badge>
-            {customization.ottomanStorage && <Badge variant="secondary" className="text-xs">Ottoman Storage</Badge>}
-            {customization.gasLift && <Badge variant="secondary" className="text-xs">Gas Lift</Badge>}
-            {customization.metalBase && <Badge variant="secondary" className="text-xs">Metal Base</Badge>}
-            <Badge variant="secondary" className="text-xs">{customization.baseType} Base</Badge>
+          <div className="flex flex-wrap gap-1.5 md:gap-2">
+            <Badge variant="secondary" className="text-xs px-2 py-0.5">{customization.size}</Badge>
+            <Badge variant="secondary" className="text-xs px-2 py-0.5">{customization.fabric}</Badge>
+            <Badge variant="secondary" className="text-xs px-2 py-0.5">{customization.color}</Badge>
+            {customization.ottomanStorage && <Badge variant="secondary" className="text-xs px-2 py-0.5">Ottoman</Badge>}
+            {customization.gasLift && <Badge variant="secondary" className="text-xs px-2 py-0.5">Gas Lift</Badge>}
+            {customization.metalBase && <Badge variant="secondary" className="text-xs px-2 py-0.5">Metal Base</Badge>}
+            <Badge variant="secondary" className="text-xs px-2 py-0.5">{customization.baseType}</Badge>
           </div>
 
           {onBuyNow && (
@@ -493,10 +494,10 @@ export function BedCustomizer({ onCustomizationChange, basePrice = 0, onBuyNow, 
             >
               <Button
                 onClick={onBuyNow}
-                className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 font-semibold text-base h-12"
+                className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 font-semibold text-base md:text-lg h-12 md:h-14"
                 size="lg"
               >
-                <ShoppingCart size={20} weight="bold" className="mr-2" />
+                <ShoppingCart size={22} weight="bold" className="mr-2" />
                 Buy Now - £{(basePrice + calculatePrice()).toLocaleString()}
               </Button>
             </motion.div>
