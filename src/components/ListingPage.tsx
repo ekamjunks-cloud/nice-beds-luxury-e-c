@@ -165,28 +165,28 @@ export function ListingPage() {
             </p>
           </motion.div>
 
-          <div className="bg-card rounded-lg border border-border shadow-sm p-6 mb-8">
-            <div className="flex flex-wrap items-center gap-4 mb-4">
-              <div className="flex-1 min-w-[200px] flex flex-wrap items-center gap-3">
+          <div className="bg-card rounded-lg border border-border shadow-sm p-4 md:p-6 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4">
+              <div className="flex-1 flex flex-wrap items-center gap-2 sm:gap-3">
                 {selectedCategories.map(category => (
                   <Button
                     key={category}
                     variant="secondary"
                     size="sm"
                     onClick={() => toggleCategory(category)}
-                    className="h-8 gap-1.5"
+                    className="h-8 gap-1.5 text-xs sm:text-sm"
                   >
                     {category === 'upholstered' ? 'Upholstered' : 'Bespoke'}
                     <X size={14} weight="bold" />
                   </Button>
                 ))}
                 {selectedCategories.length === 0 && (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => toggleCategory('upholstered')}
-                      className="h-8"
+                      className="h-8 flex-1 sm:flex-none text-xs sm:text-sm"
                     >
                       Upholstered Beds
                     </Button>
@@ -194,7 +194,7 @@ export function ListingPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => toggleCategory('bespoke')}
-                      className="h-8"
+                      className="h-8 flex-1 sm:flex-none text-xs sm:text-sm"
                     >
                       Bespoke Collection
                     </Button>
@@ -202,16 +202,16 @@ export function ListingPage() {
                 )}
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Collapsible open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen}>
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 gap-2"
+                      className="h-8 gap-2 text-xs sm:text-sm"
                     >
                       <FunnelSimple size={16} weight="regular" />
-                      Advanced Filters
+                      <span className="hidden sm:inline">Advanced </span>Filters
                       {activeFiltersCount > 0 && (
                         <span className="ml-1 text-xs bg-accent text-accent-foreground rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
                           {activeFiltersCount}
@@ -233,7 +233,7 @@ export function ListingPage() {
                     onClick={clearAllFilters}
                     className="h-8 text-xs"
                   >
-                    Clear all
+                    Clear
                   </Button>
                 )}
               </div>
@@ -380,18 +380,18 @@ export function ListingPage() {
             )}
           </div>
 
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3 sm:gap-4">
             <p className="text-sm text-muted-foreground">
               {filteredProducts.length} {filteredProducts.length === 1 ? 'bed' : 'beds'} found
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
               <div className="flex items-center border border-border rounded-md">
                 <Button
                   variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode(() => 'grid')}
-                  className="rounded-r-none border-r border-border"
+                  className="rounded-r-none border-r border-border h-8 px-2.5 sm:px-3"
                 >
                   <SquaresFour size={18} weight={viewMode === 'grid' ? 'fill' : 'regular'} />
                 </Button>
@@ -399,14 +399,14 @@ export function ListingPage() {
                   variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode(() => 'list')}
-                  className="rounded-l-none"
+                  className="rounded-l-none h-8 px-2.5 sm:px-3"
                 >
                   <List size={18} weight={viewMode === 'list' ? 'fill' : 'regular'} />
                 </Button>
               </div>
-              <SortAscending size={20} weight="regular" className="text-muted-foreground" />
+              <SortAscending size={20} weight="regular" className="text-muted-foreground hidden sm:block" />
               <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[140px] sm:w-[180px] h-8 text-xs sm:text-sm">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -422,7 +422,7 @@ export function ListingPage() {
 
           <motion.div
             layout
-            className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8' : 'flex flex-col gap-6'}
+            className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8' : 'flex flex-col gap-6'}
           >
             <AnimatePresence mode="popLayout">
               {filteredProducts.map((product, index) => (
