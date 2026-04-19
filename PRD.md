@@ -62,32 +62,32 @@ The design should evoke feelings of sophisticated comfort, British craftsmanship
 
 ## Color Selection
 
-A sophisticated palette centered around warm neutrals with deep jewel-tone accents that reference luxury upholstery fabrics.
+A refined palette inspired by luxury boutiques - sophisticated deep navy anchors the design, with champagne accents and warm gold highlights that evoke premium craftsmanship and timeless elegance.
 
-- **Primary Color**: Deep forest green (oklch(0.35 0.08 155)) - communicates luxury, nature, and British countryside heritage
-- **Secondary Colors**: Warm cream (oklch(0.96 0.01 85)) for backgrounds - creates gallery-like spaciousness; Soft taupe (oklch(0.75 0.015 75)) for secondary elements - adds warmth and sophistication
-- **Accent Color**: Rich brass/gold (oklch(0.70 0.12 75)) - draws attention to CTAs and important elements, references high-end furniture hardware
+- **Primary Color**: Deep navy (oklch(0.28 0.05 280)) - communicates trust, sophistication, and timeless luxury. This rich, saturated blue-violet creates a premium foundation.
+- **Secondary Colors**: Soft champagne (oklch(0.98 0.005 80)) for backgrounds - creates an airy, gallery-like spaciousness with subtle warmth; Light warm grey (oklch(0.88 0.015 75)) for secondary elements - adds refined neutrality
+- **Accent Color**: Warm gold (oklch(0.58 0.15 45)) - draws attention to CTAs and important elements, evokes luxury jewelry and premium hardware finishes
 - **Foreground/Background Pairings**: 
-  - Primary (Forest Green): Cream text (oklch(0.96 0.01 85)) - Ratio 7.2:1 ✓
-  - Background (Warm Cream): Charcoal text (oklch(0.25 0.01 75)) - Ratio 12.5:1 ✓
-  - Accent (Brass Gold): Forest Green text (oklch(0.35 0.08 155)) - Ratio 4.9:1 ✓
-  - Card (White): Charcoal text (oklch(0.25 0.01 75)) - Ratio 13.8:1 ✓
+  - Primary (Deep Navy oklch(0.28 0.05 280)): Champagne text (oklch(0.98 0.005 80)) - Ratio 10.8:1 ✓
+  - Background (Champagne oklch(0.98 0.005 80)): Deep charcoal text (oklch(0.20 0.015 280)) - Ratio 14.2:1 ✓
+  - Accent (Warm Gold oklch(0.58 0.15 45)): Champagne text (oklch(0.98 0.005 80)) - Ratio 4.9:1 ✓
+  - Card (White oklch(1 0 0)): Deep charcoal text (oklch(0.20 0.015 280)) - Ratio 15.1:1 ✓
 
 ## Font Selection
 
-Typography should convey refined elegance and contemporary luxury while maintaining excellent readability - a pairing of a sophisticated serif for headings with a clean geometric sans for body text.
+Typography pairing that balances classical elegance with modern sophistication - a refined serif with high contrast for headings paired with a clean, contemporary geometric sans-serif for exceptional readability.
 
-- **Primary Typeface**: Cormorant Garamond (serif) - for headings, brand name, and key messaging. Elegant and refined with classical proportions
-- **Secondary Typeface**: Inter (sans-serif) - for body text, UI elements, and product details. Highly readable with clean, modern lines
+- **Primary Typeface**: Playfair Display (serif) - for headings, brand name, and key messaging. High-contrast letterforms with elegant curves convey luxury and refinement
+- **Secondary Typeface**: Montserrat (sans-serif) - for body text, UI elements, and product details. Geometric precision with warm character ensures clarity and modern elegance
 
 - **Typographic Hierarchy**:
-  - H1 (Brand/Hero): Cormorant Garamond Medium/56px/tight tracking
-  - H2 (Section Headers): Cormorant Garamond Medium/40px/normal tracking  
-  - H3 (Product Names): Cormorant Garamond Medium/28px/normal tracking
-  - H4 (Subsections): Inter Semibold/18px/normal tracking
-  - Body (Descriptions): Inter Regular/16px/relaxed line-height (1.7)
-  - Small (Metadata): Inter Regular/14px/normal tracking
-  - Button Text: Inter Medium/15px/slight letter-spacing
+  - H1 (Brand/Hero): Playfair Display Semibold/56px/tight tracking (-0.02em)
+  - H2 (Section Headers): Playfair Display Medium/40px/tight tracking (-0.01em)  
+  - H3 (Product Names): Playfair Display Medium/28px/normal tracking
+  - H4 (Subsections): Montserrat Semibold/18px/slight tracking (0.01em)
+  - Body (Descriptions): Montserrat Regular/16px/relaxed line-height (1.7)
+  - Small (Metadata): Montserrat Regular/14px/normal tracking
+  - Button Text: Montserrat Medium/15px/slight letter-spacing (0.03em)
 
 ## Animations
 
