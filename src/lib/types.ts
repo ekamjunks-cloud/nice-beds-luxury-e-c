@@ -81,7 +81,7 @@ export interface Order {
   userId: string
   items: CartItem[]
   totalAmount: number
-  status: 'pending' | 'confirmed' | 'in-production' | 'ready' | 'delivered'
+  status: 'pending' | 'confirmed' | 'in-production' | 'quality-check' | 'ready-for-delivery' | 'out-for-delivery' | 'delivered'
   createdAt: number
   updatedAt: number
   shippingAddress?: {
@@ -91,6 +91,15 @@ export interface Order {
     country: string
   }
   notes?: string
+  estimatedDeliveryDate?: number
+  trackingNumber?: string
+  statusHistory?: OrderStatusUpdate[]
+}
+
+export interface OrderStatusUpdate {
+  status: Order['status']
+  timestamp: number
+  note?: string
 }
 
 export interface UpdateRequest {

@@ -47,12 +47,12 @@ This is an ecommerce showcase with cart functionality, product browsing, user au
 - Progression: Click account → Login or signup → View dashboard → Access order history → Request updates on orders → Logout
 - Success criteria: Users can create accounts with email/password, login persists across sessions, cart is saved per user, orders are tracked and viewable, update requests are sent successfully
 
-**Order Tracking & Updates**
-- Functionality: Customers can view their order history with status tracking (pending, confirmed, in-production, ready, delivered) and request updates on specific orders
-- Purpose: Provide transparency in the custom bed creation process and enable customer communication
-- Trigger: Navigating to account page after login, clicking "Request Update" on an order
-- Progression: View orders → See order status → Request update → Write message → Submit → View request history
-- Success criteria: Orders display with accurate status, update requests are tracked, customers can see all their previous requests
+**Order Tracking & Updates with Estimated Delivery**
+- Functionality: Comprehensive order tracking system with real-time status updates, estimated delivery dates, and detailed progress timeline. Orders move through 7 status stages (pending, confirmed, in-production, quality-check, ready-for-delivery, out-for-delivery, delivered) with automatic tracking number generation and 42-day estimated delivery calculation. Each order displays a visual timeline with completion indicators, status-specific notes, and countdown to delivery. Customers can click "Track Order" to view detailed tracking information in a modal with full order history and shipping address.
+- Purpose: Provide complete transparency in the handcrafted bed creation process, set accurate delivery expectations, and enable proactive customer communication throughout the production journey
+- Trigger: Navigating to account page orders tab, clicking "Track Order" button on an order card
+- Progression: View orders tab → See order list with delivery estimates → Click "Track Order" → View detailed timeline modal → See tracking number → Review order items → Monitor progress updates → Request custom updates if needed
+- Success criteria: Orders display accurate estimated delivery dates with days remaining, tracking numbers are automatically generated (format: NB[timestamp][random]), visual progress timeline shows current status and completed steps, delivery address is displayed, status changes are logged with timestamps and notes, delivery countdown updates dynamically
 
 **Consultation Request**
 - Functionality: Form for customers to request bespoke consultations or inquiries about products

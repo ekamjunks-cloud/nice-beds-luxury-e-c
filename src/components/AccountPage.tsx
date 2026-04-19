@@ -6,6 +6,7 @@ import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
 import { WishlistDrawer } from '@/components/WishlistDrawer'
 import { AuthDialog } from '@/components/AuthDialog'
+import { OrderTracking } from '@/components/OrderTracking'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -13,11 +14,12 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { SignOut, Package, ChatCircle, Gear, Bell, User as UserIcon } from '@phosphor-icons/react'
+import { SignOut, Package, ChatCircle, Gear, Bell, User as UserIcon, MagnifyingGlass } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
+import { format, differenceInDays } from 'date-fns'
+import { Order } from '@/lib/types'
 
 export function AccountPage() {
   const navigate = useNavigate()
@@ -27,6 +29,7 @@ export function AccountPage() {
 
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
   const [selectedOrderId, setSelectedOrderId] = useState<string>('')
+  const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<Order | null>(null)
   const [updateMessage, setUpdateMessage] = useState('')
 
   const [cartOpen, setCartOpen] = useState(false)
@@ -285,57 +288,95 @@ export function AccountPage() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {orders.map((order) => (
-                    <Card key={order.id}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <CardTitle className="text-lg">Order #{order.id.slice(-8)}</CardTitle>
-                            <CardDescription>
-                              Placed on {format(order.createdAt, 'MMMM d, yyyy')}
-                            </CardDescription>
-                          </div>
-                          <Badge className={getStatusColor(order.status)}>
-                            {getStatusLabel(order.status)}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          {order.items.map((item, index) => (
-                            <div key={index} className="flex items-start justify-between">
-                              <div>
-                                <p className="font-medium">{item.product.name}</p>
-                                {item.selectedColor && (
-                                  <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
-                                )}
-                                <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
-                              </div>
-                              <p className="font-medium">
-                                £{((item.product.price + (item.customizationPrice || 0)) * item.quantity).toLocaleString()}
-                              </p>
+                  {orders.map((order) => {
+                    const estimatedDelivery = order.estimatedDeliveryDate || Date.now()
+                    const daysUntilDelivery = differenceInDays(estimatedDelivery, Date.now())
+
+                    return (
+                      <Card key={order.id}>
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <CardTitle className="text-lg">Order #{order.id.slice(-8)}</CardTitle>
+                              <CardDescription>
+                                Placed on {format(order.createdAt, 'MMMM d, yyyy')}
+                              </CardDescription>
+                              {order.trackingNumber && (
+                                <div className="mt-2">
+                                  <p className="text-xs text-muted-foreground">Tracking: {order.trackingNumber}</p>
+                                </div>
+                              )}
                             </div>
-                          ))}
-
-                          <Separator />
-
-                          <div className="flex items-center justify-between">
-                            <p className="font-semibold text-lg">Total</p>
-                            <p className="font-semibold text-lg">£{order.totalAmount.toLocaleString()}</p>
+                            <Badge className={getStatusColor(order.status)}>
+                              {getStatusLabel(order.status)}
+                            </Badge>
                           </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {order.status !== 'delivered' && (
+                              <div className="bg-accent/10 border border-accent/20 p-4 rounded-lg">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="text-sm font-medium text-muted-foreground">Estimated Delivery</p>
+                                    <p className="text-lg font-semibold text-foreground">
+                                      {format(estimatedDelivery, 'MMM d, yyyy')}
+                                    </p>
+                                  </div>
+                                  {daysUntilDelivery > 0 && (
+                                    <Badge variant="outline" className="text-accent-foreground border-accent/30">
+                                      {daysUntilDelivery} {daysUntilDelivery === 1 ? 'day' : 'days'}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            )}
 
-                          <Button
-                            variant="outline"
-                            className="w-full gap-2"
-                            onClick={() => handleRequestUpdate(order.id)}
-                          >
-                            <ChatCircle size={20} />
-                            Request Update
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                            {order.items.map((item, index) => (
+                              <div key={index} className="flex items-start justify-between">
+                                <div>
+                                  <p className="font-medium">{item.product.name}</p>
+                                  {item.selectedColor && (
+                                    <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
+                                  )}
+                                  <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                                </div>
+                                <p className="font-medium">
+                                  £{((item.product.price + (item.customizationPrice || 0)) * item.quantity).toLocaleString()}
+                                </p>
+                              </div>
+                            ))}
+
+                            <Separator />
+
+                            <div className="flex items-center justify-between">
+                              <p className="font-semibold text-lg">Total</p>
+                              <p className="font-semibold text-lg">£{order.totalAmount.toLocaleString()}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <Button
+                                variant="outline"
+                                className="gap-2"
+                                onClick={() => setSelectedOrderForTracking(order)}
+                              >
+                                <MagnifyingGlass size={20} />
+                                Track Order
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="gap-2"
+                                onClick={() => handleRequestUpdate(order.id)}
+                              >
+                                <ChatCircle size={20} />
+                                Request Update
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -511,6 +552,49 @@ export function AccountPage() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!selectedOrderForTracking} onOpenChange={() => setSelectedOrderForTracking(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Order Details & Tracking</DialogTitle>
+            <DialogDescription>
+              {selectedOrderForTracking && `Order #${selectedOrderForTracking.id.slice(-8)}`}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrderForTracking && (
+            <div className="space-y-6 pt-4">
+              <OrderTracking order={selectedOrderForTracking} />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Order Items</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {selectedOrderForTracking.items.map((item, index) => (
+                    <div key={index} className="flex items-start justify-between pb-3 border-b last:border-0 last:pb-0">
+                      <div>
+                        <p className="font-medium">{item.product.name}</p>
+                        {item.selectedColor && (
+                          <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
+                        )}
+                        <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                      </div>
+                      <p className="font-medium">
+                        £{((item.product.price + (item.customizationPrice || 0)) * item.quantity).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                  <Separator />
+                  <div className="flex items-center justify-between pt-2">
+                    <p className="font-semibold text-lg">Total</p>
+                    <p className="font-semibold text-lg">£{selectedOrderForTracking.totalAmount.toLocaleString()}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
