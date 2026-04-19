@@ -30,6 +30,16 @@ function HomePage() {
   const [currentSection, setCurrentSection] = useState('home')
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleViewDetails = (product: Product) => {
     navigate(`/product/${product.slug}`)
@@ -40,6 +50,10 @@ function HomePage() {
     const element = document.getElementById(section)
     element?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  const parallaxOffset = scrollY * 0.5
+  const fadeOpacity = Math.max(0, 1 - scrollY / 500)
+  const scaleValue = 1 + scrollY * 0.0002
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,6 +71,8 @@ function HomePage() {
             backgroundImage: 'url(https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1600&q=80)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            transform: `translateY(${parallaxOffset}px) scale(${scaleValue})`,
+            willChange: 'transform',
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-background/95" />
@@ -67,6 +83,10 @@ function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="relative z-10 max-w-4xl mx-auto px-6 text-center"
+          style={{
+            opacity: fadeOpacity,
+            transform: `translateY(${scrollY * 0.3}px)`,
+          }}
         >
           <h1 className="font-heading text-5xl md:text-7xl font-medium text-card mb-6 leading-tight">
             Luxury Beds, <br />Crafted in Leeds
