@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProductCard } from '@/components/ProductCard'
+import { ProductListItem } from '@/components/ProductListItem'
 import { Navigation } from '@/components/Navigation'
 import { CartDrawer } from '@/components/CartDrawer'
 import { WishlistDrawer } from '@/components/WishlistDrawer'
@@ -19,10 +20,12 @@ import {
 } from '@/components/ui/select'
 import { products } from '@/lib/products'
 import { Product } from '@/lib/types'
-import { Faders, X, SortAscending } from '@phosphor-icons/react'
+import { Faders, X, SortAscending, SquaresFour, List } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
+import { useKV } from '@github/spark/hooks'
 
 type SortOption = 'featured' | 'price-low' | 'price-high' | 'name-az' | 'name-za'
+type ViewMode = 'grid' | 'list'
 
 export function ListingPage() {
   const navigate = useNavigate()
@@ -30,6 +33,7 @@ export function ListingPage() {
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(true)
   
+  const [viewMode, setViewMode] = useKV<ViewMode>('product-view-mode', 'grid')
   const [priceRange, setPriceRange] = useState([0, 2500])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedColors, setSelectedColors] = useState<string[]>([])
@@ -330,6 +334,24 @@ export function ListingPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-border rounded-md">
+                    <Button
+                      variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                      className="rounded-r-none border-r border-border"
+                    >
+                      <SquaresFour size={18} weight={viewMode === 'grid' ? 'fill' : 'regular'} />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className="rounded-l-none"
+                    >
+                      <List size={18} weight={viewMode === 'list' ? 'fill' : 'regular'} />
+                    </Button>
+                  </div>
                   <SortAscending size={20} weight="regular" className="text-muted-foreground" />
                   <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                     <SelectTrigger className="w-[180px]">
@@ -424,7 +446,7 @@ export function ListingPage() {
 
               <motion.div
                 layout
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8"
+                className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'}
               >
                 <AnimatePresence mode="popLayout">
                   {filteredProducts.map((product, index) => (
@@ -439,7 +461,11 @@ export function ListingPage() {
                         delay: index * 0.05
                       }}
                     >
-                      <ProductCard product={product} onViewDetails={handleViewDetails} />
+                      {viewMode === 'grid' ? (
+                        <ProductCard product={product} onViewDetails={handleViewDetails} />
+                      ) : (
+                        <ProductListItem product={product} onViewDetails={handleViewDetails} />
+                      )}
                     </motion.div>
                   ))}
                 </AnimatePresence>
