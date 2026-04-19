@@ -3,12 +3,21 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingBag, List, Heart, User } from '@phosphor-icons/react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ShoppingBag, List, Heart, User, Package, Gear, SignOut, Bell } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { useWishlist } from '@/hooks/use-wishlist'
 import { useAuth } from '@/hooks/use-auth'
 import { CartItem } from '@/lib/types'
 import { AuthDialog } from './AuthDialog'
+import { toast } from 'sonner'
 
 interface NavigationProps {
   onCartOpen: () => void
@@ -20,7 +29,7 @@ interface NavigationProps {
 export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSection }: NavigationProps) {
   const [cart] = useKV<CartItem[]>('cart', [])
   const { wishlistCount } = useWishlist()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [authDialogOpen, setAuthDialogOpen] = useState(false)
   const navigate = useNavigate()
@@ -52,6 +61,24 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
     } else {
       setAuthDialogOpen(true)
     }
+  }
+
+  const handleLogout = () => {
+    logout()
+    toast.success('Logged out successfully')
+    navigate('/')
+  }
+
+  const handleOrders = () => {
+    navigate('/account?tab=orders')
+  }
+
+  const handleSettings = () => {
+    navigate('/account?tab=settings')
+  }
+
+  const handleNotifications = () => {
+    navigate('/account?tab=notifications')
   }
 
   const navLinks = [
@@ -94,17 +121,55 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
           </div>
 
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleAccountClick}
-              className="relative"
-            >
-              <User size={20} weight="regular" />
-              {isAuthenticated && (
-                <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" />
-              )}
-            </Button>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                  >
+                    <User size={20} weight="regular" />
+                    <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col gap-1">
+                      <p className="font-medium">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground font-normal">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleOrders} className="cursor-pointer">
+                    <Package size={16} weight="regular" className="mr-2" />
+                    Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleNotifications} className="cursor-pointer">
+                    <Bell size={16} weight="regular" className="mr-2" />
+                    Notifications
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
+                    <Gear size={16} weight="regular" className="mr-2" />
+                    Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                    <SignOut size={16} weight="regular" className="mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleAccountClick}
+                className="relative"
+              >
+                <User size={20} weight="regular" />
+              </Button>
+            )}
 
             <Button
               variant="ghost"

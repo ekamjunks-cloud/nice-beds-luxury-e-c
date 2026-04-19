@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/use-auth'
 import { useOrders } from '@/hooks/use-orders'
 import { Navigation } from '@/components/Navigation'
@@ -11,14 +11,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { SignOut, Package, ChatCircle } from '@phosphor-icons/react'
+import { SignOut, Package, ChatCircle, Gear, Bell, User as UserIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 
 export function AccountPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user, logout, isAuthenticated } = useAuth()
   const { orders, updateRequests, requestUpdate } = useOrders(user?.id)
 
@@ -29,6 +32,12 @@ export function AccountPage() {
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [authDialogOpen, setAuthDialogOpen] = useState(false)
+
+  const activeTab = searchParams.get('tab') || 'overview'
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value })
+  }
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -147,170 +156,324 @@ export function AccountPage() {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Account Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{user.email}</p>
-              </div>
-              {user.phone && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Phone</p>
-                  <p className="font-medium">{user.phone}</p>
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+            <TabsTrigger value="overview" className="gap-2">
+              <UserIcon size={16} />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="gap-2">
+              <Package size={16} />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="gap-2">
+              <Bell size={16} />
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="gap-2">
+              <Gear size={16} />
+              Settings
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Account Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Email</p>
+                    <p className="font-medium">{user.email}</p>
+                  </div>
+                  {user.phone && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Phone</p>
+                      <p className="font-medium">{user.phone}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-muted-foreground">Member Since</p>
+                    <p className="font-medium">{format(user.createdAt, 'MMMM d, yyyy')}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-heading font-medium text-primary mb-1">
+                    {orders.length}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Total {orders.length === 1 ? 'Order' : 'Orders'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Update Requests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-heading font-medium text-primary mb-1">
+                    {updateRequests.length}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Total Requests
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {orders.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Recent Orders</CardTitle>
+                  <CardDescription>Your most recent purchases</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {orders.slice(0, 3).map((order) => (
+                      <div key={order.id} className="flex items-center justify-between pb-4 border-b last:border-0 last:pb-0">
+                        <div>
+                          <p className="font-medium">Order #{order.id.slice(-8)}</p>
+                          <p className="text-sm text-muted-foreground">{format(order.createdAt, 'MMMM d, yyyy')}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Badge className={getStatusColor(order.status)}>
+                            {getStatusLabel(order.status)}
+                          </Badge>
+                          <p className="font-medium">£{order.totalAmount.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {orders.length > 3 && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4" 
+                      onClick={() => handleTabChange('orders')}
+                    >
+                      View All Orders
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="orders" className="space-y-6">
+            <div>
+              <h2 className="font-heading text-3xl font-medium mb-6">Your Orders</h2>
+
+              {orders.length === 0 ? (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-16">
+                    <Package size={64} className="text-muted-foreground mb-4" />
+                    <h3 className="font-heading text-xl font-medium mb-2">No orders yet</h3>
+                    <p className="text-muted-foreground text-center mb-6">
+                      Start browsing our collection to place your first order
+                    </p>
+                    <Button onClick={() => navigate('/shop')} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      Browse Beds
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  {orders.map((order) => (
+                    <Card key={order.id}>
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <CardTitle className="text-lg">Order #{order.id.slice(-8)}</CardTitle>
+                            <CardDescription>
+                              Placed on {format(order.createdAt, 'MMMM d, yyyy')}
+                            </CardDescription>
+                          </div>
+                          <Badge className={getStatusColor(order.status)}>
+                            {getStatusLabel(order.status)}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="flex items-start justify-between">
+                              <div>
+                                <p className="font-medium">{item.product.name}</p>
+                                {item.selectedColor && (
+                                  <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
+                                )}
+                                <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                              </div>
+                              <p className="font-medium">
+                                £{((item.product.price + (item.customizationPrice || 0)) * item.quantity).toLocaleString()}
+                              </p>
+                            </div>
+                          ))}
+
+                          <Separator />
+
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold text-lg">Total</p>
+                            <p className="font-semibold text-lg">£{order.totalAmount.toLocaleString()}</p>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            onClick={() => handleRequestUpdate(order.id)}
+                          >
+                            <ChatCircle size={20} />
+                            Request Update
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               )}
-              <div>
-                <p className="text-sm text-muted-foreground">Member Since</p>
-                <p className="font-medium">{format(user.createdAt, 'MMMM d, yyyy')}</p>
+            </div>
+
+            {updateRequests.length > 0 && (
+              <div className="space-y-6 mt-8">
+                <h2 className="font-heading text-3xl font-medium">Update Requests</h2>
+                <div className="space-y-4">
+                  {updateRequests.map((request) => (
+                    <Card key={request.id}>
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <CardTitle className="text-lg">Request for Order #{request.orderId.slice(-8)}</CardTitle>
+                          <Badge className={request.status === 'pending' ? 'bg-muted' : 'bg-green-100 text-green-800'}>
+                            {request.status === 'pending' ? 'Pending' : 'Responded'}
+                          </Badge>
+                        </div>
+                        <CardDescription>
+                          Sent on {format(request.createdAt, 'MMMM d, yyyy')}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground mb-1">Your Message:</p>
+                          <p className="text-sm">{request.message}</p>
+                        </div>
+                        {request.response && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground mb-1">Response:</p>
+                            <p className="text-sm bg-muted p-3 rounded">{request.response}</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </TabsContent>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-heading font-medium text-primary mb-1">
-                {orders.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Total {orders.length === 1 ? 'Order' : 'Orders'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Update Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-heading font-medium text-primary mb-1">
-                {updateRequests.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Total Requests
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Separator className="my-8" />
-
-        <div className="space-y-6">
-          <h2 className="font-heading text-3xl font-medium">Your Orders</h2>
-
-          {orders.length === 0 ? (
+          <TabsContent value="notifications" className="space-y-6">
             <Card>
-              <CardContent className="flex flex-col items-center justify-center py-16">
-                <Package size={64} className="text-muted-foreground mb-4" />
-                <h3 className="font-heading text-xl font-medium mb-2">No orders yet</h3>
-                <p className="text-muted-foreground text-center mb-6">
-                  Start browsing our collection to place your first order
-                </p>
-                <Button onClick={() => navigate('/shop')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  Browse Beds
+              <CardHeader>
+                <CardTitle className="text-2xl">Notifications</CardTitle>
+                <CardDescription>Stay updated with order status and messages</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {updateRequests.length > 0 ? (
+                    updateRequests.map((request) => (
+                      <div key={request.id} className="flex items-start gap-4 pb-4 border-b last:border-0">
+                        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                          <ChatCircle size={20} className="text-accent" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-1">
+                            <p className="font-medium">Update Request {request.status === 'responded' ? 'Answered' : 'Sent'}</p>
+                            <p className="text-xs text-muted-foreground">{format(request.createdAt, 'MMM d, yyyy')}</p>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {request.status === 'responded' 
+                              ? `Your request for order #${request.orderId.slice(-8)} has been answered`
+                              : `Your request for order #${request.orderId.slice(-8)} is pending`
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12">
+                      <Bell size={48} className="text-muted-foreground mb-3 mx-auto" />
+                      <p className="text-muted-foreground">No notifications yet</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Account Settings</CardTitle>
+                <CardDescription>Manage your account information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="settings-name">Name</Label>
+                    <Input 
+                      id="settings-name" 
+                      defaultValue={user.name}
+                      disabled
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="settings-email">Email</Label>
+                    <Input 
+                      id="settings-email" 
+                      type="email" 
+                      defaultValue={user.email}
+                      disabled
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="settings-phone">Phone</Label>
+                    <Input 
+                      id="settings-phone" 
+                      type="tel" 
+                      defaultValue={user.phone || ''}
+                      disabled
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Account settings are currently view-only. Contact support to update your information.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-destructive/50">
+              <CardHeader>
+                <CardTitle className="text-xl text-destructive">Danger Zone</CardTitle>
+                <CardDescription>Irreversible account actions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="destructive" 
+                  className="w-full gap-2"
+                  onClick={handleLogout}
+                >
+                  <SignOut size={20} />
+                  Log Out of Account
                 </Button>
               </CardContent>
             </Card>
-          ) : (
-            <div className="space-y-4">
-              {orders.map((order) => (
-                <Card key={order.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg">Order #{order.id.slice(-8)}</CardTitle>
-                        <CardDescription>
-                          Placed on {format(order.createdAt, 'MMMM d, yyyy')}
-                        </CardDescription>
-                      </div>
-                      <Badge className={getStatusColor(order.status)}>
-                        {getStatusLabel(order.status)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {order.items.map((item, index) => (
-                        <div key={index} className="flex items-start justify-between">
-                          <div>
-                            <p className="font-medium">{item.product.name}</p>
-                            {item.selectedColor && (
-                              <p className="text-sm text-muted-foreground">Color: {item.selectedColor}</p>
-                            )}
-                            <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
-                          </div>
-                          <p className="font-medium">
-                            £{((item.product.price + (item.customizationPrice || 0)) * item.quantity).toLocaleString()}
-                          </p>
-                        </div>
-                      ))}
-
-                      <Separator />
-
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-lg">Total</p>
-                        <p className="font-semibold text-lg">£{order.totalAmount.toLocaleString()}</p>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        className="w-full gap-2"
-                        onClick={() => handleRequestUpdate(order.id)}
-                      >
-                        <ChatCircle size={20} />
-                        Request Update
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {updateRequests.length > 0 && (
-          <>
-            <Separator className="my-8" />
-            <div className="space-y-6">
-              <h2 className="font-heading text-3xl font-medium">Update Requests</h2>
-              <div className="space-y-4">
-                {updateRequests.map((request) => (
-                  <Card key={request.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg">Request for Order #{request.orderId.slice(-8)}</CardTitle>
-                        <Badge className={request.status === 'pending' ? 'bg-muted' : 'bg-green-100 text-green-800'}>
-                          {request.status === 'pending' ? 'Pending' : 'Responded'}
-                        </Badge>
-                      </div>
-                      <CardDescription>
-                        Sent on {format(request.createdAt, 'MMMM d, yyyy')}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-1">Your Message:</p>
-                        <p className="text-sm">{request.message}</p>
-                      </div>
-                      {request.response && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground mb-1">Response:</p>
-                          <p className="text-sm bg-muted p-3 rounded">{request.response}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
@@ -350,6 +513,10 @@ export function AccountPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <WishlistDrawer open={wishlistOpen} onOpenChange={setWishlistOpen} />
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </div>
   )
 }
