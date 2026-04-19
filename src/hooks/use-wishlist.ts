@@ -1,9 +1,23 @@
 import { useKV } from '@github/spark/hooks'
 import { Product, BedCustomization, WishlistItem } from '@/lib/types'
 import { toast } from 'sonner'
+import { useAuth } from './use-auth'
+
+function getSessionId(): string {
+  let sessionId = sessionStorage.getItem('spark-session-id')
+  if (!sessionId) {
+    sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    sessionStorage.setItem('spark-session-id', sessionId)
+  }
+  return sessionId
+}
 
 export function useWishlist() {
-  const [wishlist, setWishlist] = useKV<WishlistItem[]>('wishlist', [])
+  const { user } = useAuth()
+  const sessionId = getSessionId()
+  const wishlistKey = user ? `wishlist-user-${user.id}` : `wishlist-${sessionId}`
+  
+  const [wishlist, setWishlist] = useKV<WishlistItem[]>(wishlistKey, [])
 
   const addToWishlist = (product: Product, customization?: BedCustomization, customizationPrice?: number) => {
     setWishlist((current = []) => {

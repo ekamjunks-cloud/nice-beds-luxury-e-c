@@ -1,9 +1,24 @@
 import { useKV } from '@github/spark/hooks'
 import { CartItem, Product, BedCustomization } from '@/lib/types'
 import { toast } from 'sonner'
+import { useAuth } from './use-auth'
+import { useEffect, useState } from 'react'
+
+function getSessionId(): string {
+  let sessionId = sessionStorage.getItem('spark-session-id')
+  if (!sessionId) {
+    sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    sessionStorage.setItem('spark-session-id', sessionId)
+  }
+  return sessionId
+}
 
 export function useCart() {
-  const [cart, setCart] = useKV<CartItem[]>('cart', [])
+  const { user } = useAuth()
+  const sessionId = getSessionId()
+  const cartKey = user ? `cart-user-${user.id}` : `cart-${sessionId}`
+  
+  const [cart, setCart] = useKV<CartItem[]>(cartKey, [])
 
   const addToCart = (
     product: Product, 
