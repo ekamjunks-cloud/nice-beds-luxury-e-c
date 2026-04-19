@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ShoppingBag, List, Heart, User, Package, Gear, SignOut, Bell } from '@phosphor-icons/react'
+import { ShoppingBag, List, Heart, User, Package, Gear, SignOut, Bell, ShieldCheck } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { useWishlist } from '@/hooks/use-wishlist'
 import { useAuth } from '@/hooks/use-auth'
@@ -79,6 +79,10 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
 
   const handleNotifications = () => {
     navigate('/account?tab=notifications')
+  }
+
+  const handleAdmin = () => {
+    navigate('/admin')
   }
 
   const navLinks = [
@@ -152,6 +156,11 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
                   <DropdownMenuItem onClick={handleSettings} className="cursor-pointer">
                     <Gear size={16} weight="regular" className="mr-2" />
                     Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleAdmin} className="cursor-pointer">
+                    <ShieldCheck size={16} weight="regular" className="mr-2" />
+                    Admin Panel
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">

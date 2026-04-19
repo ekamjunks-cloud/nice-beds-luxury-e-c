@@ -8,6 +8,7 @@ import { ProductCard } from '@/components/ProductCard'
 import { ProductPage } from '@/components/ProductPage'
 import { ListingPage } from '@/components/ListingPage'
 import { AccountPage } from '@/components/AccountPage'
+import { AdminPanel } from '@/components/AdminPanel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -388,6 +389,7 @@ function App() {
         <Route path="/shop" element={<ListingPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
   )
