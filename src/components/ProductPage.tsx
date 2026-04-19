@@ -9,7 +9,7 @@ import { CartDrawer } from '@/components/CartDrawer'
 import { WishlistDrawer } from '@/components/WishlistDrawer'
 import { BedCustomizer, BedCustomization } from '@/components/BedCustomizer'
 import { ReviewsSection } from '@/components/ReviewsSection'
-import { products } from '@/lib/products'
+import { useProducts } from '@/hooks/use-products'
 import { getProductReviews, calculateAverageRating } from '@/lib/reviews'
 import { Product, CartItem } from '@/lib/types'
 import { Sparkle, ArrowLeft, ShoppingCart, ShieldCheck, Lock, Truck, MapPin, CalendarCheck, Package, Star, Heart, Clock } from '@phosphor-icons/react'
@@ -27,6 +27,7 @@ export function ProductPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const [, setCart] = useKV<CartItem[]>('cart', [])
+  const { products, getProductBySlug } = useProducts()
   const { isInWishlist, toggleWishlist } = useWishlist()
   const { addToRecentlyViewed, getRecentlyViewedProducts } = useRecentlyViewed()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
@@ -34,7 +35,7 @@ export function ProductPage() {
   const [customization, setCustomization] = useState<BedCustomization | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
 
-  const product = products.find(p => p.slug === slug)
+  const product = slug ? getProductBySlug(slug) : undefined
 
   useEffect(() => {
     if (product) {

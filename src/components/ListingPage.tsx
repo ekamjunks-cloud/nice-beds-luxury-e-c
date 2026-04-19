@@ -23,7 +23,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { products } from '@/lib/products'
+import { useProducts } from '@/hooks/use-products'
 import { Product } from '@/lib/types'
 import { Faders, X, SortAscending, SquaresFour, List, FunnelSimple, CaretDown } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
@@ -34,6 +34,7 @@ type ViewMode = 'grid' | 'list'
 
 export function ListingPage() {
   const navigate = useNavigate()
+  const { products } = useProducts()
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false)

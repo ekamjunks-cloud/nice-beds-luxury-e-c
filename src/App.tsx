@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { products } from '@/lib/products'
+import { useProducts } from '@/hooks/use-products'
 import { Product } from '@/lib/types'
 import { MapPin, Phone, Envelope, Sparkle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
@@ -30,6 +30,7 @@ function ScrollToTop() {
 
 function HomePage() {
   const navigate = useNavigate()
+  const { products } = useProducts()
   const [currentSection, setCurrentSection] = useState('home')
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
