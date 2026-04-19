@@ -93,6 +93,13 @@ Typography pairing that balances classical elegance with modern sophistication -
 
 Animations should feel luxurious and considered - smooth, slightly slower than typical web animations to convey quality and refinement. Use subtle fade-ins and upward movements for content reveals on scroll, gentle hover scale effects (1.02x) on product images to invite interaction, smooth color transitions on buttons (300ms), and elegant slide-in animations for the cart drawer. Avoid anything bouncy or playful; everything should feel measured and sophisticated.
 
+## Background & Texture
+
+The site features a layered background approach for visual depth and organic premium feel:
+- **Base Layer**: Soft champagne background (oklch(0.98 0.005 80))
+- **Pattern Layer**: Subtle diagonal crosshatch pattern (repeating-linear-gradient at 45deg and -45deg) creating a refined textile-like texture
+- **Grain Overlay**: Fixed SVG fractal noise filter at 3% opacity applied via body::before pseudo-element, creating a subtle film-grain texture that adds tactile quality and prevents the digital interface from feeling too sterile. The grain is non-interactive (pointer-events: none) and sits at high z-index to overlay all content subtly.
+
 ## Component Selection
 
 - **Components**: 
