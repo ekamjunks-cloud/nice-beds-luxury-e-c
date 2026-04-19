@@ -8,7 +8,7 @@ A luxury ecommerce platform for Nice Beds, a Leeds-based specialist brand offeri
 3. **Trustworthy**: Clear product information, transparent pricing, and professional presentation that inspires confidence in a significant purchase
 
 **Complexity Level**: Light Application (multiple features with basic state)
-This is an ecommerce showcase with cart functionality, product browsing, and inquiry features - not a full checkout system, but more than a simple content page.
+This is an ecommerce showcase with cart functionality, product browsing, user authentication, order tracking, and inquiry features - providing a complete customer experience for a luxury bed retailer.
 
 ## Essential Features
 
@@ -39,6 +39,20 @@ This is an ecommerce showcase with cart functionality, product browsing, and inq
 - Trigger: Adding a product to cart
 - Progression: Add product → Cart updates → View cart → Adjust quantities → Proceed to inquiry
 - Success criteria: Cart persists between sessions, totals calculate correctly, items can be removed
+
+**User Authentication & Account Management**
+- Functionality: Login and signup system allowing customers to create accounts, sign in, view order history, track orders, and request updates
+- Purpose: Enable customers to save their cart, track purchases, and communicate with the business about their orders
+- Trigger: Clicking account icon in navigation, attempting to checkout, or accessing account page
+- Progression: Click account → Login or signup → View dashboard → Access order history → Request updates on orders → Logout
+- Success criteria: Users can create accounts with email/password, login persists across sessions, cart is saved per user, orders are tracked and viewable, update requests are sent successfully
+
+**Order Tracking & Updates**
+- Functionality: Customers can view their order history with status tracking (pending, confirmed, in-production, ready, delivered) and request updates on specific orders
+- Purpose: Provide transparency in the custom bed creation process and enable customer communication
+- Trigger: Navigating to account page after login, clicking "Request Update" on an order
+- Progression: View orders → See order status → Request update → Write message → Submit → View request history
+- Success criteria: Orders display with accurate status, update requests are tracked, customers can see all their previous requests
 
 **Consultation Request**
 - Functionality: Form for customers to request bespoke consultations or inquiries about products

@@ -3,10 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingBag, List, Heart } from '@phosphor-icons/react'
+import { ShoppingBag, List, Heart, User } from '@phosphor-icons/react'
 import { useKV } from '@github/spark/hooks'
 import { useWishlist } from '@/hooks/use-wishlist'
+import { useAuth } from '@/hooks/use-auth'
 import { CartItem } from '@/lib/types'
+import { AuthDialog } from './AuthDialog'
 
 interface NavigationProps {
   onCartOpen: () => void
@@ -18,7 +20,9 @@ interface NavigationProps {
 export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSection }: NavigationProps) {
   const [cart] = useKV<CartItem[]>('cart', [])
   const { wishlistCount } = useWishlist()
+  const { user, isAuthenticated } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [authDialogOpen, setAuthDialogOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -39,6 +43,14 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
       } else {
         onNavigate(id)
       }
+    }
+  }
+
+  const handleAccountClick = () => {
+    if (isAuthenticated) {
+      navigate('/account')
+    } else {
+      setAuthDialogOpen(true)
     }
   }
 
@@ -82,6 +94,18 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
           </div>
 
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleAccountClick}
+              className="relative"
+            >
+              <User size={20} weight="regular" />
+              {isAuthenticated && (
+                <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" />
+              )}
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
@@ -142,6 +166,8 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
           </div>
         </div>
       </div>
+
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </nav>
   )
 }

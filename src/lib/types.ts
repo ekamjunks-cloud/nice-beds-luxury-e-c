@@ -67,3 +67,39 @@ export interface Review {
   size?: string
   color?: string
 }
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  phone?: string
+  createdAt: number
+}
+
+export interface Order {
+  id: string
+  userId: string
+  items: CartItem[]
+  totalAmount: number
+  status: 'pending' | 'confirmed' | 'in-production' | 'ready' | 'delivered'
+  createdAt: number
+  updatedAt: number
+  shippingAddress?: {
+    street: string
+    city: string
+    postcode: string
+    country: string
+  }
+  notes?: string
+}
+
+export interface UpdateRequest {
+  id: string
+  orderId: string
+  userId: string
+  message: string
+  createdAt: number
+  status: 'pending' | 'responded'
+  response?: string
+  respondedAt?: number
+}
