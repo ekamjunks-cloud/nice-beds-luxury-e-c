@@ -422,7 +422,7 @@ export function ListingPage() {
 
           <motion.div
             layout
-            className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8' : 'flex flex-col gap-6'}
+            className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8' : 'flex flex-col gap-6'}
           >
             <AnimatePresence mode="popLayout">
               {filteredProducts.map((product, index) => (

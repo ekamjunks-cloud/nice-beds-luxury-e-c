@@ -57,7 +57,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
     >
       <Card className="group cursor-pointer overflow-hidden hover:shadow-xl hover:shadow-primary/5 border-border hover:border-accent/30 transition-all duration-300">
         <div 
-          className="relative aspect-[4/3] overflow-hidden bg-muted/30"
+          className="relative aspect-[4/3] md:aspect-[4/3] overflow-hidden bg-muted/30"
           onClick={() => onViewDetails(product)}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -71,15 +71,16 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
           {product.category === 'bespoke' && (
-            <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground gap-1.5 shadow-lg backdrop-blur-sm px-3 py-1">
-              <Sparkle size={14} weight="fill" />
-              Bespoke
+            <Badge className="absolute top-2 right-2 md:top-4 md:right-4 bg-accent text-accent-foreground gap-1 md:gap-1.5 shadow-lg backdrop-blur-sm px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs">
+              <Sparkle size={12} weight="fill" />
+              <span className="hidden sm:inline">Bespoke</span>
             </Badge>
           )}
           
           {!product.inStock && product.category !== 'bespoke' && (
-            <Badge className="absolute top-4 right-4 bg-muted text-muted-foreground gap-1.5 shadow-lg backdrop-blur-sm px-3 py-1">
-              Contact for Details
+            <Badge className="absolute top-2 right-2 md:top-4 md:right-4 bg-muted text-muted-foreground gap-1 md:gap-1.5 shadow-lg backdrop-blur-sm px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs">
+              <span className="hidden sm:inline">Contact for Details</span>
+              <span className="sm:hidden">Contact</span>
             </Badge>
           )}
           
@@ -90,18 +91,21 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
               e.stopPropagation()
               toggleWishlist(product)
             }}
-            className="absolute top-4 left-4 h-10 w-10 rounded-full bg-card/90 backdrop-blur-md hover:bg-card shadow-md hover:scale-110 transition-all duration-200"
+            className="absolute top-2 left-2 md:top-4 md:left-4 h-8 w-8 md:h-10 md:w-10 rounded-full bg-card/90 backdrop-blur-md hover:bg-card shadow-md hover:scale-110 transition-all duration-200"
           >
             <Heart 
-              size={20} 
+              size={16} 
               weight={inWishlist ? "fill" : "regular"} 
-              className={inWishlist ? "text-accent" : "text-foreground"}
+              className={cn(
+                "md:w-5 md:h-5",
+                inWishlist ? "text-accent" : "text-foreground"
+              )}
             />
           </Button>
 
           {product.inStock && product.features.length > 0 && (
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-foreground/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <div className="flex flex-wrap gap-2">
+            <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-t from-foreground/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+              <div className="hidden md:flex flex-wrap gap-2">
                 {product.features.slice(0, 3).map((feature, idx) => (
                   <span 
                     key={idx}
@@ -116,51 +120,51 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           )}
         </div>
 
-        <CardContent className="p-5 space-y-4">
+        <CardContent className="p-3 md:p-5 space-y-2 md:space-y-4">
           {hasReviews && (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, idx) => (
                   <Star
                     key={idx}
-                    size={14}
+                    size={12}
                     weight={idx < Math.round(avgRating) ? "fill" : "regular"}
                     className={idx < Math.round(avgRating) ? "text-accent" : "text-muted-foreground"}
                   />
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] md:text-xs text-muted-foreground">
                 {avgRating.toFixed(1)} ({reviews.length})
               </span>
             </div>
           )}
 
           <div>
-            <h3 className="font-heading text-2xl font-medium text-foreground mb-2 line-clamp-1 group-hover:text-primary transition-colors duration-200">
+            <h3 className="font-heading text-base md:text-2xl font-medium text-foreground mb-1 md:mb-2 line-clamp-1 group-hover:text-primary transition-colors duration-200">
               {product.name}
             </h3>
             
-            <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">
+            <p className="text-muted-foreground text-xs md:text-sm line-clamp-2 leading-relaxed hidden md:block">
               {product.description}
             </p>
           </div>
 
-          <div className="flex items-baseline gap-2">
-            <p className="text-2xl font-heading font-semibold text-primary">
+          <div className="flex items-baseline gap-1.5 md:gap-2">
+            <p className="text-lg md:text-2xl font-heading font-semibold text-primary">
               £{product.price.toLocaleString()}
             </p>
             {product.category === 'upholstered' && (
-              <span className="text-xs text-muted-foreground">from</span>
+              <span className="text-[10px] md:text-xs text-muted-foreground">from</span>
             )}
           </div>
 
           {product.category !== 'bespoke' && product.inStock && (
-            <div className="space-y-3 pt-2 border-t border-border">
-              <div className="flex items-center gap-2">
+            <div className="space-y-2 md:space-y-3 pt-2 border-t border-border">
+              <div className="hidden md:flex items-center gap-2">
                 <Ruler size={16} className="text-muted-foreground" />
                 <span className="text-xs font-medium text-foreground">Available Sizes:</span>
               </div>
-              <div className="flex gap-2">
+              <div className="hidden md:flex gap-2">
                 {AVAILABLE_SIZES.map((size) => (
                   <div
                     key={size}
@@ -173,13 +177,13 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
 
               {product.colors.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Palette size={16} className="text-muted-foreground" />
-                    <span className="text-xs font-medium text-foreground">
+                  <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
+                    <Palette size={14} className="text-muted-foreground" />
+                    <span className="text-[10px] md:text-xs font-medium text-foreground">
                       {product.colors.length} Colors
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5 md:gap-2">
                     {product.colors.slice(0, QUICK_COLORS).map((color, idx) => (
                       <button
                         key={idx}
@@ -188,7 +192,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
                           setQuickSelectedColor(color)
                         }}
                         className={cn(
-                          "flex-1 h-8 rounded-md border-2 transition-all duration-200",
+                          "flex-1 h-6 md:h-8 rounded-md border-2 transition-all duration-200",
                           quickSelectedColor === color 
                             ? "border-accent ring-2 ring-accent/20" 
                             : "border-border hover:border-accent/50"
@@ -213,7 +217,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
                       />
                     ))}
                     {product.colors.length > QUICK_COLORS && (
-                      <div className="flex items-center justify-center px-2 text-xs text-muted-foreground">
+                      <div className="flex items-center justify-center px-1.5 md:px-2 text-[10px] md:text-xs text-muted-foreground">
                         +{product.colors.length - QUICK_COLORS}
                       </div>
                     )}
@@ -221,7 +225,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
                 </div>
               )}
 
-              <div className="flex items-start gap-2 pt-1">
+              <div className="hidden md:flex items-start gap-2 pt-1">
                 <Package size={16} className="text-muted-foreground mt-0.5 flex-shrink-0" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
                   Customizable with storage, base options & more
@@ -231,14 +235,14 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           )}
 
           {product.category === 'bespoke' && (
-            <div className="space-y-2 pt-2 border-t border-border">
-              <div className="flex items-start gap-2">
-                <Sparkle size={16} className="text-accent mt-0.5 flex-shrink-0" weight="fill" />
-                <span className="text-xs text-muted-foreground leading-relaxed">
-                  Fully customizable design, materials, and dimensions
+            <div className="space-y-1.5 md:space-y-2 pt-2 border-t border-border">
+              <div className="flex items-start gap-1.5 md:gap-2">
+                <Sparkle size={14} className="text-accent mt-0.5 flex-shrink-0" weight="fill" />
+                <span className="text-[10px] md:text-xs text-muted-foreground leading-relaxed">
+                  Fully customizable design
                 </span>
               </div>
-              <div className="flex items-start gap-2">
+              <div className="hidden md:flex items-start gap-2">
                 <Check size={16} className="text-accent mt-0.5 flex-shrink-0" weight="bold" />
                 <span className="text-xs text-muted-foreground leading-relaxed">
                   Personal consultation included
@@ -248,29 +252,31 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           )}
         </CardContent>
 
-        <CardFooter className="p-5 pt-0 flex gap-2">
+        <CardFooter className="p-3 md:p-5 pt-0 flex gap-1.5 md:gap-2">
           {product.category === 'bespoke' ? (
             <Button 
               onClick={() => onViewDetails(product)}
-              className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200 shadow-sm hover:shadow-md"
+              className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200 shadow-sm hover:shadow-md text-xs md:text-sm h-9 md:h-10"
             >
-              <Sparkle size={16} weight="fill" className="mr-2" />
-              Start Design
+              <Sparkle size={14} weight="fill" className="mr-1.5 md:mr-2" />
+              <span className="hidden sm:inline">Start Design</span>
+              <span className="sm:hidden">Design</span>
             </Button>
           ) : (
             <>
               <Button 
                 onClick={() => onViewDetails(product)}
-                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200 shadow-sm hover:shadow-md text-xs md:text-sm h-9 md:h-10"
               >
-                Customize
+                <span className="hidden sm:inline">Customize</span>
+                <span className="sm:hidden">View</span>
               </Button>
               <Button
                 onClick={handleQuickAddToCart}
                 variant="outline"
-                className="px-4 border-accent/30 hover:bg-accent/10 transition-all duration-200"
+                className="px-2.5 md:px-4 border-accent/30 hover:bg-accent/10 transition-all duration-200 h-9 md:h-10"
               >
-                <ShoppingCart size={18} />
+                <ShoppingCart size={16} className="md:w-[18px] md:h-[18px]" />
               </Button>
             </>
           )}
