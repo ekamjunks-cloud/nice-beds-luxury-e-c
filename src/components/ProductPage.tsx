@@ -323,7 +323,7 @@ export function ProductPage() {
               />
             </div>
 
-            <div className="space-y-4 md:space-y-5">
+            <div className="space-y-4 md:space-y-5 mt-6 md:mt-8">
               {product.inStock ? (
                 <>
                   <div className="flex gap-2 md:gap-3">
