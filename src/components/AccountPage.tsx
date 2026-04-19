@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/use-auth'
 import { useOrders } from '@/hooks/use-orders'
 import { Navigation } from '@/components/Navigation'
+import { CartDrawer } from '@/components/CartDrawer'
+import { WishlistDrawer } from '@/components/WishlistDrawer'
+import { AuthDialog } from '@/components/AuthDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +19,7 @@ import { format } from 'date-fns'
 
 export function AccountPage() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, logout, isAuthenticated } = useAuth()
   const { orders, updateRequests, requestUpdate } = useOrders(user?.id)
 
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
@@ -25,10 +28,43 @@ export function AccountPage() {
 
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
+  const [authDialogOpen, setAuthDialogOpen] = useState(false)
 
-  if (!user) {
-    navigate('/')
-    return null
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAuthDialogOpen(true)
+    }
+  }, [isAuthenticated])
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation
+          onCartOpen={() => setCartOpen(true)}
+          onWishlistOpen={() => setWishlistOpen(true)}
+          onNavigate={() => {}}
+          currentSection=""
+        />
+        <div className="max-w-6xl mx-auto px-6 py-24 text-center">
+          <Package size={64} className="text-muted-foreground mb-4 mx-auto" />
+          <h1 className="font-heading text-4xl font-medium text-foreground mb-4">
+            Account Access Required
+          </h1>
+          <p className="text-muted-foreground text-lg mb-6">
+            Please sign in to view your account and orders
+          </p>
+          <Button
+            onClick={() => setAuthDialogOpen(true)}
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            Sign In
+          </Button>
+        </div>
+        <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+        <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+        <WishlistDrawer open={wishlistOpen} onOpenChange={setWishlistOpen} />
+      </div>
+    )
   }
 
   const handleLogout = () => {
@@ -47,6 +83,8 @@ export function AccountPage() {
       toast.error('Please enter a message')
       return
     }
+
+    if (!user) return
 
     requestUpdate(selectedOrderId, user.id, updateMessage)
     toast.success('Update request sent successfully')
