@@ -69,6 +69,23 @@
 
 body {
   font-family: var(--font-body);
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      oklch(0.96 0.005 80) 2px,
+      oklch(0.96 0.005 80) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      oklch(0.97 0.005 80) 2px,
+      oklch(0.97 0.005 80) 4px
+    );
+  background-size: 60px 60px;
+  background-position: 0 0, 30px 30px;
 }
 
 h1, h2, h3 {
