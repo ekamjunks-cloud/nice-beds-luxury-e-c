@@ -362,7 +362,7 @@ export function ListingPage() {
                     >
                       In Stock Only
                       <X size={14} weight="bold" />
-                      <X size={14} weight="bold" />
+                    </Button>
                   )}
                   {(priceRange[0] !== 0 || priceRange[1] !== 2500) && (
                     <Button
