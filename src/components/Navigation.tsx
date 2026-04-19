@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
@@ -10,16 +11,36 @@ import { CartItem } from '@/lib/types'
 interface NavigationProps {
   onCartOpen: () => void
   onWishlistOpen: () => void
-  onNavigate: (section: string) => void
-  currentSection: string
+  onNavigate?: (section: string) => void
+  currentSection?: string
 }
 
 export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSection }: NavigationProps) {
   const [cart] = useKV<CartItem[]>('cart', [])
   const { wishlistCount } = useWishlist()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const cartItemCount = (cart || []).reduce((sum, item) => sum + item.quantity, 0)
+
+  const handleNavClick = (id: string) => {
+    if (id === 'home') {
+      navigate('/')
+    } else if (id === 'shop') {
+      navigate('/shop')
+    } else if (onNavigate) {
+      if (location.pathname !== '/') {
+        navigate('/')
+        setTimeout(() => {
+          const element = document.getElementById(id)
+          element?.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+      } else {
+        onNavigate(id)
+      }
+    }
+  }
 
   const navLinks = [
     { id: 'home', label: 'Home' },
@@ -28,12 +49,19 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
     { id: 'contact', label: 'Contact' }
   ]
 
+  const isActive = (id: string) => {
+    if (id === 'home' && location.pathname === '/') return currentSection === 'home'
+    if (id === 'shop' && location.pathname === '/shop') return true
+    if (location.pathname === '/' && currentSection === id) return true
+    return false
+  }
+
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <button 
-            onClick={() => onNavigate('home')}
+            onClick={() => navigate('/')}
             className="font-heading text-2xl font-medium text-foreground hover:text-primary transition-colors"
           >
             Nice Beds
@@ -43,9 +71,9 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
             {navLinks.map((link) => (
               <button
                 key={link.id}
-                onClick={() => onNavigate(link.id)}
+                onClick={() => handleNavClick(link.id)}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  currentSection === link.id ? 'text-primary' : 'text-foreground'
+                  isActive(link.id) ? 'text-primary' : 'text-foreground'
                 }`}
               >
                 {link.label}
@@ -98,11 +126,11 @@ export function Navigation({ onCartOpen, onWishlistOpen, onNavigate, currentSect
                     <button
                       key={link.id}
                       onClick={() => {
-                        onNavigate(link.id)
+                        handleNavClick(link.id)
                         setMobileMenuOpen(false)
                       }}
                       className={`text-left text-lg font-medium transition-colors hover:text-primary ${
-                        currentSection === link.id ? 'text-primary' : 'text-foreground'
+                        isActive(link.id) ? 'text-primary' : 'text-foreground'
                       }`}
                     >
                       {link.label}

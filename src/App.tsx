@@ -6,6 +6,7 @@ import { CartDrawer } from '@/components/CartDrawer'
 import { WishlistDrawer } from '@/components/WishlistDrawer'
 import { ProductCard } from '@/components/ProductCard'
 import { ProductPage } from '@/components/ProductPage'
+import { ListingPage } from '@/components/ListingPage'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -98,7 +99,7 @@ function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              onClick={() => scrollToSection('shop')}
+              onClick={() => navigate('/shop')}
               className="bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300 text-lg px-8"
             >
               Shop Collection
@@ -383,6 +384,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/shop" element={<ListingPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
       </Routes>
     </Router>

@@ -19,6 +19,13 @@ This is an ecommerce showcase with cart functionality, product browsing, and inq
 - Progression: View hero section → Browse product grid → Click product card → View detailed product page with specifications
 - Success criteria: All products display with correct images, prices, dimensions, and descriptions
 
+**Advanced Product Filtering & Listing Page**
+- Functionality: Dedicated shop page with comprehensive filtering system allowing customers to filter by price range (£0-£2500 with slider), category (Upholstered/Bespoke), availability (in stock only), color options (all available colors), and materials. Includes multiple sort options (featured, price low-to-high, price high-to-low, name A-Z, name Z-A).
+- Purpose: Enable customers to quickly find beds matching their specific requirements and preferences
+- Trigger: Clicking "Shop" in navigation or "Shop Collection" CTAs
+- Progression: Navigate to shop page → View all products → Adjust filters in sidebar → See real-time filtered results → Select sort order → View product count → Click product to view details
+- Success criteria: Filters update results instantly, active filters display as removable chips, filter count badge shows number of active filters, empty state appears when no products match criteria, sidebar is collapsible on mobile
+
 **Product Detail View with Full Customization**
 - Functionality: Dedicated product page with comprehensive bed customization options including size selection (Double, King, Super King), fabric choice (Naples, Plush Velvet), 10 color options, ottoman storage with gas lift, metal base option, and base type selection (Slats or Board). Interactive image carousel displays multiple product views.
 - Purpose: Provide all information and customization options needed to configure and purchase the perfect bed
