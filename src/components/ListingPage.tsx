@@ -18,9 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { products } from '@/lib/products'
 import { Product } from '@/lib/types'
-import { Faders, X, SortAscending, SquaresFour, List } from '@phosphor-icons/react'
+import { Faders, X, SortAscending, SquaresFour, List, FunnelSimple, CaretDown } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -31,7 +36,7 @@ export function ListingPage() {
   const navigate = useNavigate()
   const [cartOpen, setCartOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
-  const [filtersOpen, setFiltersOpen] = useState(true)
+  const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false)
   
   const [viewMode, setViewMode] = useKV<ViewMode>('product-view-mode', 'grid')
   const [priceRange, setPriceRange] = useState([0, 2500])
@@ -150,7 +155,7 @@ export function ListingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-12"
+            className="mb-8"
           >
             <h1 className="font-heading text-4xl md:text-5xl font-medium text-foreground mb-4">
               Our Bed Collection
@@ -160,338 +165,307 @@ export function ListingPage() {
             </p>
           </motion.div>
 
-          <div className="flex gap-8">
-            <AnimatePresence mode="wait">
-              {filtersOpen && (
-                <motion.aside
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-72 flex-shrink-0 hidden lg:block"
-                >
-                  <div className="sticky top-24 bg-card rounded-lg p-6 border border-border shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2">
-                        <Faders size={20} weight="regular" className="text-accent" />
-                        <h2 className="font-semibold text-lg">Filters</h2>
-                        {activeFiltersCount > 0 && (
-                          <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5">
-                            {activeFiltersCount}
-                          </span>
-                        )}
-                      </div>
-                      {activeFiltersCount > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={clearAllFilters}
-                          className="h-auto py-1 px-2 text-xs"
-                        >
-                          Clear all
-                        </Button>
-                      )}
-                    </div>
-
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="font-semibold text-sm mb-3">Price Range</h3>
-                        <div className="space-y-4">
-                          <Slider
-                            value={priceRange}
-                            onValueChange={setPriceRange}
-                            min={0}
-                            max={2500}
-                            step={50}
-                            className="w-full"
-                          />
-                          <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>£{priceRange[0]}</span>
-                            <span>£{priceRange[1]}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <div>
-                        <h3 className="font-semibold text-sm mb-3">Category</h3>
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="category-upholstered"
-                              checked={selectedCategories.includes('upholstered')}
-                              onCheckedChange={() => toggleCategory('upholstered')}
-                            />
-                            <Label
-                              htmlFor="category-upholstered"
-                              className="text-sm font-normal cursor-pointer"
-                            >
-                              Upholstered Beds
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="category-bespoke"
-                              checked={selectedCategories.includes('bespoke')}
-                              onCheckedChange={() => toggleCategory('bespoke')}
-                            />
-                            <Label
-                              htmlFor="category-bespoke"
-                              className="text-sm font-normal cursor-pointer"
-                            >
-                              Bespoke Collection
-                            </Label>
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <div>
-                        <h3 className="font-semibold text-sm mb-3">Availability</h3>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="in-stock"
-                            checked={inStockOnly}
-                            onCheckedChange={(checked) => setInStockOnly(!!checked)}
-                          />
-                          <Label
-                            htmlFor="in-stock"
-                            className="text-sm font-normal cursor-pointer"
-                          >
-                            In Stock Only
-                          </Label>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <div>
-                        <h3 className="font-semibold text-sm mb-3">Colors</h3>
-                        <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                          {allColors.map(color => (
-                            <div key={color} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`color-${color}`}
-                                checked={selectedColors.includes(color)}
-                                onCheckedChange={() => toggleColor(color)}
-                              />
-                              <Label
-                                htmlFor={`color-${color}`}
-                                className="text-sm font-normal cursor-pointer"
-                              >
-                                {color}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <div>
-                        <h3 className="font-semibold text-sm mb-3">Materials</h3>
-                        <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                          {allMaterials.map(material => (
-                            <div key={material} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`material-${material}`}
-                                checked={selectedMaterials.includes(material)}
-                                onCheckedChange={() => toggleMaterial(material)}
-                              />
-                              <Label
-                                htmlFor={`material-${material}`}
-                                className="text-sm font-normal cursor-pointer"
-                              >
-                                {material}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.aside>
-              )}
-            </AnimatePresence>
-
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-                <div className="flex items-center gap-4">
+          <div className="bg-card rounded-lg border border-border shadow-sm p-6 mb-8">
+            <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div className="flex-1 min-w-[200px] flex flex-wrap items-center gap-3">
+                {selectedCategories.map(category => (
                   <Button
-                    variant="outline"
+                    key={category}
+                    variant="secondary"
                     size="sm"
-                    onClick={() => setFiltersOpen(!filtersOpen)}
-                    className="lg:hidden"
+                    onClick={() => toggleCategory(category)}
+                    className="h-8 gap-1.5"
                   >
-                    <Faders size={16} weight="regular" className="mr-2" />
-                    Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+                    {category === 'upholstered' ? 'Upholstered' : 'Bespoke'}
+                    <X size={14} weight="bold" />
                   </Button>
-                  <p className="text-sm text-muted-foreground">
-                    {filteredProducts.length} {filteredProducts.length === 1 ? 'bed' : 'beds'} found
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center border border-border rounded-md">
+                ))}
+                {selectedCategories.length === 0 && (
+                  <div className="flex gap-2">
                     <Button
-                      variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                      variant="outline"
                       size="sm"
-                      onClick={() => setViewMode('grid')}
-                      className="rounded-r-none border-r border-border"
+                      onClick={() => toggleCategory('upholstered')}
+                      className="h-8"
                     >
-                      <SquaresFour size={18} weight={viewMode === 'grid' ? 'fill' : 'regular'} />
+                      Upholstered Beds
                     </Button>
                     <Button
-                      variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                      variant="outline"
                       size="sm"
-                      onClick={() => setViewMode('list')}
-                      className="rounded-l-none"
+                      onClick={() => toggleCategory('bespoke')}
+                      className="h-8"
                     >
-                      <List size={18} weight={viewMode === 'list' ? 'fill' : 'regular'} />
+                      Bespoke Collection
                     </Button>
                   </div>
-                  <SortAscending size={20} weight="regular" className="text-muted-foreground" />
-                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="featured">Featured</SelectItem>
-                      <SelectItem value="price-low">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="name-az">Name: A to Z</SelectItem>
-                      <SelectItem value="name-za">Name: Z to A</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                )}
               </div>
 
-              {activeFiltersCount > 0 && (
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {selectedCategories.map(category => (
-                    <motion.div
-                      key={category}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
+              <div className="flex items-center gap-3">
+                <Collapsible open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-2"
                     >
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => toggleCategory(category)}
-                        className="h-7 gap-1"
-                      >
-                        {category === 'upholstered' ? 'Upholstered' : 'Bespoke'}
-                        <X size={14} weight="bold" />
-                      </Button>
-                    </motion.div>
-                  ))}
-                  {selectedColors.map(color => (
-                    <motion.div
-                      key={color}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                    >
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => toggleColor(color)}
-                        className="h-7 gap-1"
-                      >
-                        {color}
-                        <X size={14} weight="bold" />
-                      </Button>
-                    </motion.div>
-                  ))}
-                  {selectedMaterials.map(material => (
-                    <motion.div
-                      key={material}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                    >
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => toggleMaterial(material)}
-                        className="h-7 gap-1"
-                      >
-                        {material}
-                        <X size={14} weight="bold" />
-                      </Button>
-                    </motion.div>
-                  ))}
-                  {inStockOnly && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                    >
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setInStockOnly(false)}
-                        className="h-7 gap-1"
+                      <FunnelSimple size={16} weight="regular" />
+                      Advanced Filters
+                      {activeFiltersCount > 0 && (
+                        <span className="ml-1 text-xs bg-accent text-accent-foreground rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                          {activeFiltersCount}
+                        </span>
+                      )}
+                      <CaretDown 
+                        size={14} 
+                        weight="bold" 
+                        className={`transition-transform duration-200 ${advancedFiltersOpen ? 'rotate-180' : ''}`}
+                      />
+                    </Button>
+                  </CollapsibleTrigger>
+                </Collapsible>
+
+                {activeFiltersCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearAllFilters}
+                    className="h-8 text-xs"
+                  >
+                    Clear all
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <Collapsible open={advancedFiltersOpen} onOpenChange={setAdvancedFiltersOpen}>
+              <CollapsibleContent>
+                <Separator className="mb-6" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div>
+                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                      <Faders size={16} weight="regular" className="text-accent" />
+                      Price Range
+                    </h3>
+                    <div className="space-y-4">
+                      <Slider
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                        min={0}
+                        max={2500}
+                        step={50}
+                        className="w-full"
+                      />
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>£{priceRange[0]}</span>
+                        <span>£{priceRange[1]}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-sm mb-3">Availability</h3>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="in-stock"
+                        checked={inStockOnly}
+                        onCheckedChange={(checked) => setInStockOnly(!!checked)}
+                      />
+                      <Label
+                        htmlFor="in-stock"
+                        className="text-sm font-normal cursor-pointer"
                       >
                         In Stock Only
-                        <X size={14} weight="bold" />
-                      </Button>
-                    </motion.div>
+                      </Label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-sm mb-3">Colors</h3>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                      {allColors.map(color => (
+                        <div key={color} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`color-${color}`}
+                            checked={selectedColors.includes(color)}
+                            onCheckedChange={() => toggleColor(color)}
+                          />
+                          <Label
+                            htmlFor={`color-${color}`}
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {color}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-sm mb-3">Materials</h3>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                      {allMaterials.map(material => (
+                        <div key={material} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`material-${material}`}
+                            checked={selectedMaterials.includes(material)}
+                            onCheckedChange={() => toggleMaterial(material)}
+                          />
+                          <Label
+                            htmlFor={`material-${material}`}
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {material}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {activeFiltersCount > 0 && (selectedColors.length > 0 || selectedMaterials.length > 0 || inStockOnly || (priceRange[0] !== 0 || priceRange[1] !== 2500)) && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex flex-wrap gap-2">
+                  {selectedColors.map(color => (
+                    <Button
+                      key={color}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => toggleColor(color)}
+                      className="h-7 gap-1"
+                    >
+                      {color}
+                      <X size={14} weight="bold" />
+                    </Button>
+                  ))}
+                  {selectedMaterials.map(material => (
+                    <Button
+                      key={material}
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => toggleMaterial(material)}
+                      className="h-7 gap-1"
+                    >
+                      {material}
+                      <X size={14} weight="bold" />
+                    </Button>
+                  ))}
+                  {inStockOnly && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setInStockOnly(false)}
+                      className="h-7 gap-1"
+                    >
+                      In Stock Only
+                      <X size={14} weight="bold" />
+                    </Button>
+                  )}
+                  {(priceRange[0] !== 0 || priceRange[1] !== 2500) && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setPriceRange([0, 2500])}
+                      className="h-7 gap-1"
+                    >
+                      £{priceRange[0]} - £{priceRange[1]}
+                      <X size={14} weight="bold" />
+                    </Button>
                   )}
                 </div>
-              )}
+              </div>
+            )}
+          </div>
 
-              <motion.div
-                layout
-                className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'}
-              >
-                <AnimatePresence mode="popLayout">
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
-                      key={product.id}
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ 
-                        duration: 0.4,
-                        delay: index * 0.05
-                      }}
-                    >
-                      {viewMode === 'grid' ? (
-                        <ProductCard product={product} onViewDetails={handleViewDetails} />
-                      ) : (
-                        <ProductListItem product={product} onViewDetails={handleViewDetails} />
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <p className="text-sm text-muted-foreground">
+              {filteredProducts.length} {filteredProducts.length === 1 ? 'bed' : 'beds'} found
+            </p>
 
-              {filteredProducts.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center py-16"
+            <div className="flex items-center gap-3">
+              <div className="flex items-center border border-border rounded-md">
+                <Button
+                  variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className="rounded-r-none border-r border-border"
                 >
-                  <div className="max-w-md mx-auto">
-                    <h3 className="font-heading text-2xl font-medium text-foreground mb-3">
-                      No beds found
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      Try adjusting your filters to see more results
-                    </p>
-                    <Button onClick={clearAllFilters} variant="outline">
-                      Clear all filters
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
+                  <SquaresFour size={18} weight={viewMode === 'grid' ? 'fill' : 'regular'} />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className="rounded-l-none"
+                >
+                  <List size={18} weight={viewMode === 'list' ? 'fill' : 'regular'} />
+                </Button>
+              </div>
+              <SortAscending size={20} weight="regular" className="text-muted-foreground" />
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="featured">Featured</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="name-az">Name: A to Z</SelectItem>
+                  <SelectItem value="name-za">Name: Z to A</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
+          <motion.div
+            layout
+            className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8' : 'flex flex-col gap-6'}
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ 
+                    duration: 0.4,
+                    delay: index * 0.05
+                  }}
+                >
+                  {viewMode === 'grid' ? (
+                    <ProductCard product={product} onViewDetails={handleViewDetails} />
+                  ) : (
+                    <ProductListItem product={product} onViewDetails={handleViewDetails} />
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {filteredProducts.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16"
+            >
+              <div className="max-w-md mx-auto">
+                <h3 className="font-heading text-2xl font-medium text-foreground mb-3">
+                  No beds found
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Try adjusting your filters to see more results
+                </p>
+                <Button onClick={clearAllFilters} variant="outline">
+                  Clear all filters
+                </Button>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
