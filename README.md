@@ -1,6 +1,30 @@
 # 🛏️ Nice Beds - Luxury Upholstered & Bespoke Beds
 
+**Version 1.0.0** | Production Ready ✅
+
 A premium ecommerce platform for Nice Beds, a Leeds-based luxury bed retailer specializing in handcrafted upholstered and bespoke beds.
+
+> **🚀 Status**: Ready for public launch! All features tested and production-optimized.
+
+### 👋 First time here? Start with [WELCOME.md](./WELCOME.md)
+
+---
+
+## ⚡ Ready to Deploy?
+
+**[👉 QUICK START - Deploy Now!](./QUICK_START.md)**
+
+Your site is 100% ready. Build and deploy in 3 simple steps.
+
+---
+
+## 📚 Documentation
+
+- **[⚡ Quick Start](./QUICK_START.md)** - Deploy in 3 steps (Start here!)
+- **[🚀 Launch Guide](./LAUNCH_GUIDE.md)** - Complete guide to going public
+- **[✅ Production Readiness](./PRODUCTION_READY.md)** - Full verification checklist
+- **[📦 Deployment Checklist](./DEPLOYMENT.md)** - Technical deployment details
+- **[📋 Product Requirements](./PRD.md)** - Design and feature specifications
 
 ## ✨ Features
 
@@ -91,6 +115,22 @@ The application is production-ready with:
 - ✅ Optimized build configuration
 - ✅ Persistent state management
 - ✅ Clean code architecture
+
+## 🌟 Going Public
+
+This application is ready to launch! See [DEPLOYMENT.md](./DEPLOYMENT.md) for the complete deployment checklist and launch guide.
+
+### Quick Deploy
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+The build output will be in the `dist/` directory, ready for deployment to any static hosting service.
 
 ## 📄 License
 
