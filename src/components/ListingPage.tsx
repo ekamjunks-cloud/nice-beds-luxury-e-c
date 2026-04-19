@@ -390,7 +390,7 @@ export function ListingPage() {
                 <Button
                   variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode(() => 'grid')}
                   className="rounded-r-none border-r border-border"
                 >
                   <SquaresFour size={18} weight={viewMode === 'grid' ? 'fill' : 'regular'} />
@@ -398,7 +398,7 @@ export function ListingPage() {
                 <Button
                   variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => setViewMode('list')}
+                  onClick={() => setViewMode(() => 'list')}
                   className="rounded-l-none"
                 >
                   <List size={18} weight={viewMode === 'list' ? 'fill' : 'regular'} />

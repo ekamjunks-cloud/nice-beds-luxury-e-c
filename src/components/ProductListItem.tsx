@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Product } from '@/lib/types'
+import { Product, CartItem } from '@/lib/types'
 import { ShoppingCart, Heart, Eye } from '@phosphor-icons/react'
 import { useWishlist } from '@/hooks/use-wishlist'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { useState } from 'react'
 
 interface ProductListItemProps {
   product: Product
@@ -13,33 +14,37 @@ interface ProductListItemProps {
 }
 
 export function ProductListItem({ product, onViewDetails }: ProductListItemProps) {
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
-  const [cart, setCart] = useKV<Array<{ productId: string; quantity: number }>>('shopping-cart', [])
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const [, setCart] = useKV<CartItem[]>('cart', [])
+  const [selectedColor] = useState<string>(product.colors[0] || '')
   const inWishlist = isInWishlist(product.id)
 
   const handleAddToCart = () => {
-    setCart((currentCart = []) => {
-      const existingItem = currentCart.find(item => item.productId === product.id)
-      if (existingItem) {
-        toast.success('Updated cart quantity')
-        return currentCart.map(item =>
-          item.productId === product.id
+    setCart((currentCart) => {
+      const existing = (currentCart || []).find(item => 
+        item.product.id === product.id && !item.customization
+      )
+      
+      if (existing) {
+        toast.success('Quantity updated in cart')
+        return (currentCart || []).map(item =>
+          item.product.id === product.id && !item.customization
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
-      } else {
-        toast.success('Added to cart')
-        return [...currentCart, { productId: product.id, quantity: 1 }]
       }
+      
+      toast.success('Added to cart')
+      return [...(currentCart || []), { 
+        product, 
+        quantity: 1,
+        selectedColor
+      }]
     })
   }
 
   const handleToggleWishlist = () => {
-    if (inWishlist) {
-      removeFromWishlist(product.id)
-    } else {
-      addToWishlist(product)
-    }
+    toggleWishlist(product)
   }
 
   return (
