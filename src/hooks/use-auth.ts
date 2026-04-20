@@ -78,38 +78,46 @@ export function useAuth() {
   }, [])
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    if (!validateEmail(email)) {
-      return { success: false, error: 'Please enter a valid email address' }
+    try {
+      if (!validateEmail(email)) {
+        return { success: false, error: 'Please enter a valid email address' }
+      }
+
+      if (!password || password.length === 0) {
+        return { success: false, error: 'Please enter your password' }
+      }
+
+      const sanitizedEmail = sanitizeUserInput(email)
+      const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
+
+      const userEntry = Object.values(users).find(
+        u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
+      )
+
+      if (!userEntry) {
+        return { success: false, error: 'Invalid email or password' }
+      }
+
+      const isPasswordValid = await verifyPassword(password, userEntry.passwordHash)
+      if (!isPasswordValid) {
+        return { success: false, error: 'Invalid email or password' }
+      }
+
+      await migrateAnonymousData(userEntry.user.id)
+      
+      const sessionToken = generateSecureToken()
+      sessionStorage.setItem('auth-token', sessionToken)
+      sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
+      
+      setCurrentUser(userEntry.user)
+      return { success: true }
+    } catch (error) {
+      console.error('Login error in useAuth:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unable to sign in. Please try again.' 
+      }
     }
-
-    if (!password || password.length === 0) {
-      return { success: false, error: 'Please enter your password' }
-    }
-
-    const sanitizedEmail = sanitizeUserInput(email)
-    const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
-
-    const userEntry = Object.values(users).find(
-      u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
-    )
-
-    if (!userEntry) {
-      return { success: false, error: 'Invalid email or password' }
-    }
-
-    const isPasswordValid = await verifyPassword(password, userEntry.passwordHash)
-    if (!isPasswordValid) {
-      return { success: false, error: 'Invalid email or password' }
-    }
-
-    await migrateAnonymousData(userEntry.user.id)
-    
-    const sessionToken = generateSecureToken()
-    sessionStorage.setItem('auth-token', sessionToken)
-    sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
-    
-    setCurrentUser(userEntry.user)
-    return { success: true }
   }
 
   const signup = async (
@@ -118,62 +126,70 @@ export function useAuth() {
     name: string,
     phone?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!validateEmail(email)) {
-      return { success: false, error: 'Please enter a valid email address' }
-    }
+    try {
+      if (!validateEmail(email)) {
+        return { success: false, error: 'Please enter a valid email address' }
+      }
 
-    const passwordValidation = validatePassword(password)
-    if (!passwordValidation.valid) {
-      return { success: false, error: passwordValidation.error }
-    }
+      const passwordValidation = validatePassword(password)
+      if (!passwordValidation.valid) {
+        return { success: false, error: passwordValidation.error }
+      }
 
-    const sanitizedEmail = sanitizeUserInput(email)
-    const sanitizedName = sanitizeUserInput(name)
-    const sanitizedPhone = phone ? sanitizeUserInput(phone) : undefined
+      const sanitizedEmail = sanitizeUserInput(email)
+      const sanitizedName = sanitizeUserInput(name)
+      const sanitizedPhone = phone ? sanitizeUserInput(phone) : undefined
 
-    if (!sanitizedName || sanitizedName.length < 2) {
-      return { success: false, error: 'Please enter a valid name' }
-    }
+      if (!sanitizedName || sanitizedName.length < 2) {
+        return { success: false, error: 'Please enter a valid name' }
+      }
 
-    const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
+      const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
 
-    const existingUser = Object.values(users).find(
-      u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
-    )
+      const existingUser = Object.values(users).find(
+        u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
+      )
 
-    if (existingUser) {
-      return { success: false, error: 'An account with this email already exists' }
-    }
+      if (existingUser) {
+        return { success: false, error: 'An account with this email already exists' }
+      }
 
-    const passwordHash = await createPasswordHash(password)
+      const passwordHash = await createPasswordHash(password)
 
-    const newUser: User = {
-      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      email: sanitizedEmail,
-      name: sanitizedName,
-      phone: sanitizedPhone,
-      createdAt: Date.now()
-    }
-
-    const updatedUsers = {
-      ...users,
-      [newUser.id]: {
+      const newUser: User = {
+        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         email: sanitizedEmail,
-        passwordHash,
-        user: newUser
+        name: sanitizedName,
+        phone: sanitizedPhone,
+        createdAt: Date.now()
+      }
+
+      const updatedUsers = {
+        ...users,
+        [newUser.id]: {
+          email: sanitizedEmail,
+          passwordHash,
+          user: newUser
+        }
+      }
+
+      await window.spark.kv.set('users', updatedUsers)
+      await migrateAnonymousData(newUser.id)
+      
+      const sessionToken = generateSecureToken()
+      sessionStorage.setItem('auth-token', sessionToken)
+      sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
+      
+      setCurrentUser(newUser)
+
+      return { success: true }
+    } catch (error) {
+      console.error('Signup error in useAuth:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unable to create account. Please try again.' 
       }
     }
-
-    await window.spark.kv.set('users', updatedUsers)
-    await migrateAnonymousData(newUser.id)
-    
-    const sessionToken = generateSecureToken()
-    sessionStorage.setItem('auth-token', sessionToken)
-    sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
-    
-    setCurrentUser(newUser)
-
-    return { success: true }
   }
 
   const logout = () => {

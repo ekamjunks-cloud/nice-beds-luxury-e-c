@@ -78,7 +78,9 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
         toast.error(result.error || 'Signup failed')
       }
     } catch (error) {
-      toast.error('An error occurred during signup')
+      console.error('Signup error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during signup'
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
