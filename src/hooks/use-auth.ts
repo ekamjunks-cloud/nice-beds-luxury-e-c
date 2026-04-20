@@ -88,11 +88,8 @@ export function useAuth() {
       }
 
       const sanitizedEmail = sanitizeUserInput(email)
-      const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
-
-      const userEntry = Object.values(users).find(
-        u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
-      )
+      const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
+      const userEntry = await window.spark.kv.get<{ email: string; passwordHash: string; user: User }>(emailKey)
 
       if (!userEntry) {
         return { success: false, error: 'Invalid email or password' }
@@ -146,21 +143,9 @@ export function useAuth() {
         return { success: false, error: 'Please enter a valid name' }
       }
 
-      console.log('Fetching existing users...')
-      let users: Record<string, { email: string; passwordHash: string; user: User }> = {}
-      
-      try {
-        const existingUsers = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users')
-        if (existingUsers) {
-          users = existingUsers
-        }
-      } catch (kvError) {
-        console.warn('Error fetching users, starting fresh:', kvError)
-      }
-
-      const existingUser = Object.values(users).find(
-        u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
-      )
+      console.log('Checking if email exists...')
+      const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
+      const existingUser = await window.spark.kv.get<{ email: string; passwordHash: string; user: User }>(emailKey)
 
       if (existingUser) {
         return { success: false, error: 'An account with this email already exists' }
@@ -178,16 +163,17 @@ export function useAuth() {
       }
 
       console.log('Saving user to KV store...')
-      const updatedUsers = {
-        ...users,
-        [newUser.id]: {
-          email: sanitizedEmail,
-          passwordHash,
-          user: newUser
-        }
+      const userEntry = {
+        email: sanitizedEmail,
+        passwordHash,
+        user: newUser
       }
 
-      await window.spark.kv.set('users', updatedUsers)
+      await window.spark.kv.set(emailKey, userEntry)
+      await window.spark.kv.set(`user-id-${newUser.id}`, userEntry)
+      
+      const userIndex = await window.spark.kv.get<User[]>('user-index') || []
+      await window.spark.kv.set('user-index', [...userIndex, newUser])
       console.log('User saved successfully')
       
       console.log('Migrating anonymous data...')

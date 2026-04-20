@@ -8,7 +8,7 @@ export function useAdmin() {
   const [orders, setOrders] = useKV<Order[]>('orders', [])
   const [discounts, setDiscounts] = useKV<Discount[]>('discounts', [])
   const [variants, setVariants] = useKV<ProductVariant[]>('product-variants', [])
-  const [users, setUsers] = useKV<Record<string, { email: string; password: string; user: User }>>('users', {})
+  const [userIndex, setUserIndex] = useKV<User[]>('user-index', [])
   const [updateRequests, setUpdateRequests] = useKV<UpdateRequest[]>('update-requests', [])
   const [adminNotifications, setAdminNotifications] = useKV<AdminNotification[]>('admin-notifications', [])
   const [stats, setStats] = useState<AdminStats>({
@@ -27,7 +27,7 @@ export function useAdmin() {
       const totalRevenue = (orders || []).reduce((sum, order) => sum + order.totalAmount, 0)
       const totalOrders = (orders || []).length
       const totalProducts = (products || []).length
-      const totalUsers = Object.keys(users || {}).length
+      const totalUsers = (userIndex || []).length
       const pendingOrders = (orders || []).filter(o => o.status === 'pending').length
       const lowStockProducts = (variants || []).filter(v => v.stock < 10).length
       const activeDiscounts = (discounts || []).filter(d => d.isActive).length
@@ -46,7 +46,7 @@ export function useAdmin() {
     }
 
     calculateStats()
-  }, [orders, products, users, variants, discounts])
+  }, [orders, products, userIndex, variants, discounts])
 
   const addProduct = (product: Omit<Product, 'id'>) => {
     const newProduct: Product = {
@@ -149,7 +149,7 @@ export function useAdmin() {
     orders: orders || [],
     discounts: discounts || [],
     variants: variants || [],
-    users: Object.values(users || {}).map(u => u.user),
+    users: userIndex || [],
     updateRequests: updateRequests || [],
     notifications: adminNotifications || [],
     stats,
