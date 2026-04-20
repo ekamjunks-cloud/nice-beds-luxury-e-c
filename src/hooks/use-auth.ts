@@ -127,6 +127,8 @@ export function useAuth() {
     phone?: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
+      console.log('Starting signup process...')
+      
       if (!validateEmail(email)) {
         return { success: false, error: 'Please enter a valid email address' }
       }
@@ -144,7 +146,17 @@ export function useAuth() {
         return { success: false, error: 'Please enter a valid name' }
       }
 
-      const users = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users') || {}
+      console.log('Fetching existing users...')
+      let users: Record<string, { email: string; passwordHash: string; user: User }> = {}
+      
+      try {
+        const existingUsers = await window.spark.kv.get<Record<string, { email: string; passwordHash: string; user: User }>>('users')
+        if (existingUsers) {
+          users = existingUsers
+        }
+      } catch (kvError) {
+        console.warn('Error fetching users, starting fresh:', kvError)
+      }
 
       const existingUser = Object.values(users).find(
         u => u.email.toLowerCase() === sanitizedEmail.toLowerCase()
@@ -154,6 +166,7 @@ export function useAuth() {
         return { success: false, error: 'An account with this email already exists' }
       }
 
+      console.log('Creating password hash...')
       const passwordHash = await createPasswordHash(password)
 
       const newUser: User = {
@@ -164,6 +177,7 @@ export function useAuth() {
         createdAt: Date.now()
       }
 
+      console.log('Saving user to KV store...')
       const updatedUsers = {
         ...users,
         [newUser.id]: {
@@ -174,17 +188,27 @@ export function useAuth() {
       }
 
       await window.spark.kv.set('users', updatedUsers)
-      await migrateAnonymousData(newUser.id)
+      console.log('User saved successfully')
+      
+      console.log('Migrating anonymous data...')
+      try {
+        await migrateAnonymousData(newUser.id)
+      } catch (migrateError) {
+        console.warn('Migration error (non-critical):', migrateError)
+      }
       
       const sessionToken = generateSecureToken()
       sessionStorage.setItem('auth-token', sessionToken)
       sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
       
+      console.log('Setting current user...')
       setCurrentUser(newUser)
 
+      console.log('Signup completed successfully')
       return { success: true }
     } catch (error) {
       console.error('Signup error in useAuth:', error)
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unable to create account. Please try again.' 

@@ -57,17 +57,34 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
     setPasswordError('')
     setIsLoading(true)
 
+    if (!signupName || signupName.trim().length < 2) {
+      toast.error('Please enter your full name')
+      setIsLoading(false)
+      return
+    }
+
+    if (!signupEmail || !signupEmail.includes('@')) {
+      toast.error('Please enter a valid email address')
+      setIsLoading(false)
+      return
+    }
+
     const passwordValidation = validatePassword(signupPassword)
     if (!passwordValidation.valid) {
       setPasswordError(passwordValidation.error || 'Invalid password')
+      toast.error(passwordValidation.error || 'Invalid password')
       setIsLoading(false)
       return
     }
 
     try {
+      console.log('Submitting signup form...')
       const result = await signup(signupEmail, signupPassword, signupName, signupPhone || undefined)
+      
+      console.log('Signup result:', result)
+      
       if (result.success) {
-        toast.success('Account created successfully!')
+        toast.success('Account created successfully! Welcome to Nice Beds!')
         onOpenChange(false)
         setSignupName('')
         setSignupEmail('')
@@ -75,11 +92,13 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
         setSignupPhone('')
         setPasswordError('')
       } else {
-        toast.error(result.error || 'Signup failed')
+        const errorMsg = result.error || 'Unable to create account. Please try again.'
+        console.error('Signup failed:', errorMsg)
+        toast.error(errorMsg)
       }
     } catch (error) {
-      console.error('Signup error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during signup'
+      console.error('Signup exception:', error)
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during signup'
       toast.error(errorMessage)
     } finally {
       setIsLoading(false)
