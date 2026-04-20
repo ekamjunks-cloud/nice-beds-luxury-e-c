@@ -4,8 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/use-auth'
+import { validatePassword } from '@/lib/auth'
+import { ShieldCheck, Eye, EyeSlash } from '@phosphor-icons/react'
 
 interface AuthDialogProps {
   open: boolean
@@ -19,11 +22,14 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
 
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
 
   const [signupName, setSignupName] = useState('')
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   const [signupPhone, setSignupPhone] = useState('')
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,7 +54,15 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    setPasswordError('')
     setIsLoading(true)
+
+    const passwordValidation = validatePassword(signupPassword)
+    if (!passwordValidation.valid) {
+      setPasswordError(passwordValidation.error || 'Invalid password')
+      setIsLoading(false)
+      return
+    }
 
     try {
       const result = await signup(signupEmail, signupPassword, signupName, signupPhone || undefined)
@@ -59,6 +73,7 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
         setSignupEmail('')
         setSignupPassword('')
         setSignupPhone('')
+        setPasswordError('')
       } else {
         toast.error(result.error || 'Signup failed')
       }
@@ -66,6 +81,16 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
       toast.error('An error occurred during signup')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handlePasswordChange = (value: string) => {
+    setSignupPassword(value)
+    if (value.length > 0) {
+      const validation = validatePassword(value)
+      setPasswordError(validation.valid ? '' : validation.error || '')
+    } else {
+      setPasswordError('')
     }
   }
 
@@ -96,19 +121,31 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   required
+                  autoComplete="email"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="login-password">Password</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="login-password"
+                    type={showLoginPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showLoginPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <Button
@@ -118,6 +155,11 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                <ShieldCheck size={16} weight="fill" className="text-accent" />
+                <span>Your data is encrypted and securely stored</span>
+              </div>
             </form>
           </TabsContent>
 
@@ -132,6 +174,7 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
                   value={signupName}
                   onChange={(e) => setSignupName(e.target.value)}
                   required
+                  autoComplete="name"
                 />
               </div>
 
@@ -144,20 +187,38 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                   required
+                  autoComplete="email"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>
-                <Input
-                  id="signup-password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <Input
+                    id="signup-password"
+                    type={showSignupPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={signupPassword}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPassword(!showSignupPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showSignupPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {passwordError && (
+                  <p className="text-xs text-destructive">{passwordError}</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Must be 8+ characters with uppercase, lowercase, and numbers
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -168,16 +229,22 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
                   placeholder="+44 7700 900000"
                   value={signupPhone}
                   onChange={(e) => setSignupPhone(e.target.value)}
+                  autoComplete="tel"
                 />
               </div>
 
               <Button
                 type="submit"
                 className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                disabled={isLoading}
+                disabled={isLoading || !!passwordError}
               >
                 {isLoading ? 'Creating account...' : 'Create Account'}
               </Button>
+
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                <ShieldCheck size={16} weight="fill" className="text-accent" />
+                <span>Your password is securely hashed and encrypted</span>
+              </div>
             </form>
           </TabsContent>
         </Tabs>
