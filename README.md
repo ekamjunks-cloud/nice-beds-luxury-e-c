@@ -21,6 +21,7 @@ Your site is 100% ready. Build and deploy in 3 simple steps.
 ## 📚 Documentation
 
 - **[⚡ Quick Start](./QUICK_START.md)** - Deploy in 3 steps (Start here!)
+- **[🔐 Firebase Authentication Setup](./FIREBASE_AUTH_SETUP.md)** - Configure Firebase auth (Required!)
 - **[🚀 Launch Guide](./LAUNCH_GUIDE.md)** - Complete guide to going public
 - **[✅ Production Readiness](./PRODUCTION_READY.md)** - Full verification checklist
 - **[📦 Deployment Checklist](./DEPLOYMENT.md)** - Technical deployment details
@@ -32,7 +33,7 @@ Your site is 100% ready. Build and deploy in 3 simple steps.
 - **Product Catalog** - Browse collection of luxury upholstered and bespoke beds
 - **Advanced Filtering** - Filter by price, category, color, material, and availability
 - **Product Customization** - Full bed customization with size, fabric, color, and storage options
-- **User Authentication** - Login/signup system with persistent sessions
+- **Firebase Authentication** - Secure email/password authentication with enterprise-grade security
 - **Shopping Cart** - Save items with full customization details
 - **Wishlist** - Save favorite products for later
 - **Order Tracking** - Real-time order status with estimated delivery dates

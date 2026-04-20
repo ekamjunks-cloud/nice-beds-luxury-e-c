@@ -2,14 +2,20 @@ import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { User, CartItem, WishlistItem } from '@/lib/types'
 import { 
-  createPasswordHash, 
-  verifyPassword, 
   validateEmail, 
   validatePassword,
-  sanitizeUserInput,
-  generateSecureToken
+  sanitizeUserInput
 } from '@/lib/auth'
 import { StorageHelper } from '@/lib/storage'
+import { auth } from '@/lib/firebase'
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  User as FirebaseUser
+} from 'firebase/auth'
 
 function getSessionId(): string {
   let sessionId = sessionStorage.getItem('spark-session-id')
@@ -70,21 +76,37 @@ async function migrateAnonymousData(userId: string) {
   }
 }
 
+function mapFirebaseUserToUser(firebaseUser: FirebaseUser): User {
+  return {
+    id: firebaseUser.uid,
+    email: firebaseUser.email || '',
+    name: firebaseUser.displayName || '',
+    phone: firebaseUser.phoneNumber || undefined,
+    createdAt: new Date(firebaseUser.metadata.creationTime || Date.now()).getTime()
+  }
+}
+
 export function useAuth() {
   const [currentUser, setCurrentUser] = useKV<User | null>('current-user', null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setIsLoading(false)
-  }, [])
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const user = mapFirebaseUserToUser(firebaseUser)
+        setCurrentUser(user)
+        await migrateAnonymousData(user.id)
+      } else {
+        setCurrentUser(null)
+      }
+      setIsLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [setCurrentUser])
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const storageCheck = StorageHelper.checkStorageAvailability()
-      if (!storageCheck.available) {
-        return { success: false, error: storageCheck.message || 'Storage not available' }
-      }
-
       if (!validateEmail(email)) {
         return { success: false, error: 'Please enter a valid email address' }
       }
@@ -94,31 +116,24 @@ export function useAuth() {
       }
 
       const sanitizedEmail = sanitizeUserInput(email)
-      const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
-      const userEntry = await StorageHelper.safeKVGet<{ email: string; passwordHash: string; user: User }>(emailKey)
-
-      if (!userEntry) {
-        return { success: false, error: 'Invalid email or password' }
-      }
-
-      const isPasswordValid = await verifyPassword(password, userEntry.passwordHash)
-      if (!isPasswordValid) {
-        return { success: false, error: 'Invalid email or password' }
-      }
-
-      await migrateAnonymousData(userEntry.user.id)
+      await signInWithEmailAndPassword(auth, sanitizedEmail, password)
       
-      const sessionToken = generateSecureToken()
-      sessionStorage.setItem('auth-token', sessionToken)
-      sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
-      
-      setCurrentUser(userEntry.user)
       return { success: true }
-    } catch (error) {
-      console.error('Login error in useAuth:', error)
+    } catch (error: any) {
+      console.error('Login error:', error)
+      
+      let errorMessage = 'Unable to sign in. Please try again.'
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = 'Invalid email or password'
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed login attempts. Please try again later.'
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.'
+      }
+      
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unable to sign in. Please try again.' 
+        error: errorMessage
       }
     }
   }
@@ -130,13 +145,7 @@ export function useAuth() {
     phone?: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      console.log('Starting signup process...')
-      
-      const storageCheck = StorageHelper.checkStorageAvailability()
-      if (!storageCheck.available) {
-        console.error('Storage not available:', storageCheck.message)
-        return { success: false, error: storageCheck.message || 'Storage not available. Please enable cookies and local storage.' }
-      }
+      console.log('Starting Firebase signup...')
       
       if (!validateEmail(email)) {
         return { success: false, error: 'Please enter a valid email address' }
@@ -149,75 +158,45 @@ export function useAuth() {
 
       const sanitizedEmail = sanitizeUserInput(email)
       const sanitizedName = sanitizeUserInput(name)
-      const sanitizedPhone = phone ? sanitizeUserInput(phone) : undefined
 
       if (!sanitizedName || sanitizedName.length < 2) {
         return { success: false, error: 'Please enter a valid name' }
       }
 
-      console.log('Checking if email exists...')
-      const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
-      const existingUser = await StorageHelper.safeKVGet<{ email: string; passwordHash: string; user: User }>(emailKey)
-
-      if (existingUser) {
-        return { success: false, error: 'An account with this email already exists' }
-      }
-
-      console.log('Creating password hash...')
-      const passwordHash = await createPasswordHash(password)
-
-      const newUser: User = {
-        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        email: sanitizedEmail,
-        name: sanitizedName,
-        phone: sanitizedPhone,
-        createdAt: Date.now()
-      }
-
-      console.log('Saving user to KV store...')
-      const userEntry = {
-        email: sanitizedEmail,
-        passwordHash,
-        user: newUser
-      }
-
-      await StorageHelper.safeKVSet(emailKey, userEntry)
-      await StorageHelper.safeKVSet(`user-id-${newUser.id}`, userEntry)
+      const userCredential = await createUserWithEmailAndPassword(auth, sanitizedEmail, password)
       
-      const userIndex = await StorageHelper.safeKVGet<User[]>('user-index') || []
-      await StorageHelper.safeKVSet('user-index', [...userIndex, newUser])
-      console.log('User saved successfully')
-      
-      console.log('Migrating anonymous data...')
-      try {
-        await migrateAnonymousData(newUser.id)
-      } catch (migrateError) {
-        console.warn('Migration error (non-critical):', migrateError)
-      }
-      
-      const sessionToken = generateSecureToken()
-      sessionStorage.setItem('auth-token', sessionToken)
-      sessionStorage.setItem('auth-token-expires', (Date.now() + 7 * 24 * 60 * 60 * 1000).toString())
-      
-      console.log('Setting current user...')
-      setCurrentUser(newUser)
+      await updateProfile(userCredential.user, {
+        displayName: sanitizedName
+      })
 
-      console.log('Signup completed successfully')
+      console.log('Firebase user created successfully')
       return { success: true }
-    } catch (error) {
-      console.error('Signup error in useAuth:', error)
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    } catch (error: any) {
+      console.error('Signup error:', error)
+      
+      let errorMessage = 'Unable to create account. Please try again.'
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'An account with this email already exists'
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. Please use a stronger password.'
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.'
+      }
+      
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unable to create account. Please enable cookies and local storage, then try again.' 
+        error: errorMessage
       }
     }
   }
 
-  const logout = () => {
-    sessionStorage.removeItem('auth-token')
-    sessionStorage.removeItem('auth-token-expires')
-    setCurrentUser(null)
+  const logout = async () => {
+    try {
+      await signOut(auth)
+      setCurrentUser(null)
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   return {

@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/use-auth'
 import { validatePassword } from '@/lib/auth'
-import { ShieldCheck, Eye, EyeSlash } from '@phosphor-icons/react'
+import { ShieldCheck, Eye, EyeSlash, FireSimple } from '@phosphor-icons/react'
 
 interface AuthDialogProps {
   open: boolean
@@ -181,6 +181,11 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
                 <ShieldCheck size={16} weight="fill" className="text-accent" />
                 <span>Your data is encrypted and securely stored</span>
               </div>
+              
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1 bg-muted/30 rounded-md p-2">
+                <FireSimple size={14} weight="fill" className="text-orange-500" />
+                <span>Powered by Firebase Authentication</span>
+              </div>
             </form>
           </TabsContent>
 
@@ -265,6 +270,11 @@ export function AuthDialog({ open, onOpenChange, defaultTab = 'login' }: AuthDia
               <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
                 <ShieldCheck size={16} weight="fill" className="text-accent" />
                 <span>Your password is securely hashed and encrypted</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1 bg-muted/30 rounded-md p-2">
+                <FireSimple size={14} weight="fill" className="text-orange-500" />
+                <span>Powered by Firebase Authentication</span>
               </div>
             </form>
           </TabsContent>
