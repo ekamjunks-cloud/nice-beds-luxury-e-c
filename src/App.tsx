@@ -9,6 +9,7 @@ import { ProductPage } from '@/components/ProductPage'
 import { ListingPage } from '@/components/ListingPage'
 import { AccountPage } from '@/components/AccountPage'
 import { AdminPanel } from '@/components/AdminPanel'
+import { StorageWarning } from '@/components/StorageWarning'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -385,6 +386,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <StorageWarning />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ListingPage />} />

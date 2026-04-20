@@ -9,6 +9,7 @@ import {
   sanitizeUserInput,
   generateSecureToken
 } from '@/lib/auth'
+import { StorageHelper } from '@/lib/storage'
 
 function getSessionId(): string {
   let sessionId = sessionStorage.getItem('spark-session-id')
@@ -27,11 +28,11 @@ async function migrateAnonymousData(userId: string) {
   const userCartKey = `cart-user-${userId}`
   const userWishlistKey = `wishlist-user-${userId}`
   
-  const anonymousCart = await window.spark.kv.get<CartItem[]>(anonymousCartKey)
-  const anonymousWishlist = await window.spark.kv.get<WishlistItem[]>(anonymousWishlistKey)
+  const anonymousCart = await StorageHelper.safeKVGet<CartItem[]>(anonymousCartKey)
+  const anonymousWishlist = await StorageHelper.safeKVGet<WishlistItem[]>(anonymousWishlistKey)
   
   if (anonymousCart && anonymousCart.length > 0) {
-    const userCart = await window.spark.kv.get<CartItem[]>(userCartKey) || []
+    const userCart = await StorageHelper.safeKVGet<CartItem[]>(userCartKey) || []
     const mergedCart = [...userCart]
     
     for (const anonItem of anonymousCart) {
@@ -49,12 +50,12 @@ async function migrateAnonymousData(userId: string) {
       }
     }
     
-    await window.spark.kv.set(userCartKey, mergedCart)
-    await window.spark.kv.delete(anonymousCartKey)
+    await StorageHelper.safeKVSet(userCartKey, mergedCart)
+    await StorageHelper.safeKVDelete(anonymousCartKey)
   }
   
   if (anonymousWishlist && anonymousWishlist.length > 0) {
-    const userWishlist = await window.spark.kv.get<WishlistItem[]>(userWishlistKey) || []
+    const userWishlist = await StorageHelper.safeKVGet<WishlistItem[]>(userWishlistKey) || []
     const mergedWishlist = [...userWishlist]
     
     for (const anonItem of anonymousWishlist) {
@@ -64,8 +65,8 @@ async function migrateAnonymousData(userId: string) {
       }
     }
     
-    await window.spark.kv.set(userWishlistKey, mergedWishlist)
-    await window.spark.kv.delete(anonymousWishlistKey)
+    await StorageHelper.safeKVSet(userWishlistKey, mergedWishlist)
+    await StorageHelper.safeKVDelete(anonymousWishlistKey)
   }
 }
 
@@ -79,6 +80,11 @@ export function useAuth() {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      const storageCheck = StorageHelper.checkStorageAvailability()
+      if (!storageCheck.available) {
+        return { success: false, error: storageCheck.message || 'Storage not available' }
+      }
+
       if (!validateEmail(email)) {
         return { success: false, error: 'Please enter a valid email address' }
       }
@@ -89,7 +95,7 @@ export function useAuth() {
 
       const sanitizedEmail = sanitizeUserInput(email)
       const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
-      const userEntry = await window.spark.kv.get<{ email: string; passwordHash: string; user: User }>(emailKey)
+      const userEntry = await StorageHelper.safeKVGet<{ email: string; passwordHash: string; user: User }>(emailKey)
 
       if (!userEntry) {
         return { success: false, error: 'Invalid email or password' }
@@ -126,6 +132,12 @@ export function useAuth() {
     try {
       console.log('Starting signup process...')
       
+      const storageCheck = StorageHelper.checkStorageAvailability()
+      if (!storageCheck.available) {
+        console.error('Storage not available:', storageCheck.message)
+        return { success: false, error: storageCheck.message || 'Storage not available. Please enable cookies and local storage.' }
+      }
+      
       if (!validateEmail(email)) {
         return { success: false, error: 'Please enter a valid email address' }
       }
@@ -145,7 +157,7 @@ export function useAuth() {
 
       console.log('Checking if email exists...')
       const emailKey = `user-email-${sanitizedEmail.toLowerCase()}`
-      const existingUser = await window.spark.kv.get<{ email: string; passwordHash: string; user: User }>(emailKey)
+      const existingUser = await StorageHelper.safeKVGet<{ email: string; passwordHash: string; user: User }>(emailKey)
 
       if (existingUser) {
         return { success: false, error: 'An account with this email already exists' }
@@ -169,11 +181,11 @@ export function useAuth() {
         user: newUser
       }
 
-      await window.spark.kv.set(emailKey, userEntry)
-      await window.spark.kv.set(`user-id-${newUser.id}`, userEntry)
+      await StorageHelper.safeKVSet(emailKey, userEntry)
+      await StorageHelper.safeKVSet(`user-id-${newUser.id}`, userEntry)
       
-      const userIndex = await window.spark.kv.get<User[]>('user-index') || []
-      await window.spark.kv.set('user-index', [...userIndex, newUser])
+      const userIndex = await StorageHelper.safeKVGet<User[]>('user-index') || []
+      await StorageHelper.safeKVSet('user-index', [...userIndex, newUser])
       console.log('User saved successfully')
       
       console.log('Migrating anonymous data...')
@@ -197,7 +209,7 @@ export function useAuth() {
       console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unable to create account. Please try again.' 
+        error: error instanceof Error ? error.message : 'Unable to create account. Please enable cookies and local storage, then try again.' 
       }
     }
   }
